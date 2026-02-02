@@ -3,11 +3,11 @@ from typing import Optional
 import enum
 
 
-class UserRole(enum.Enum):
+class UserRole(str,enum.Enum):
     user = 'user'
     admin = "admin"
     
-class UserStatus(enum.Enum):
+class UserStatus(str,enum.Enum):
     online = 'online'
     offline = 'offline'
 

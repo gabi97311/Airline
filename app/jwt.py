@@ -31,7 +31,7 @@ def encode_jwt(
 def decode_jwt(token: str | bytes):
     try:
         public_key = settings.auth_jwt.public_key_file.read_text()
-        print(f"public_key: {public_key}")
+        print(public_key)
         return jwt.decode(
             token,
             key=public_key,
@@ -40,7 +40,7 @@ def decode_jwt(token: str | bytes):
     except ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
     except InvalidTokenError as e:
-        raise HTTPException(status_code=401, detail=f"Invalid token. Reason: {e}")
+        raise HTTPException(status_code=401, detail=f"Invalid token.")
 
 
 

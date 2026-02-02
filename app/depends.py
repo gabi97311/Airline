@@ -1,0 +1,39 @@
+from typing import Annotated
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials\
+    
+from app.jwt import decode_jwt
+from app.database import SessionDep
+from app.repositories.users_repositories import UsersRepositories
+from app.services.auth_services import AuthServices
+from app.services.user_services import UserServices
+
+http_bearer = HTTPBearer()
+
+def get_current_token_payload(credentials: HTTPAuthorizationCredentials = Depends(http_bearer)):
+    if not credentials:
+        raise HTTPException(status_code=404,detail='token broken')
+    token = credentials.credentials
+    payload = decode_jwt(token=token)
+    return payload
+
+def get_current_auth_user(
+    user_services: UserServiceDep,
+    payload: dict = Depends(get_current_token_payload)):
+    user_id: int = int(payload.get("sub"))
+    user = user_services.get_user_info(user_id)
+    return user
+    
+def get_auth_service(session: SessionDep) -> AuthServices:
+    return AuthServices(UsersRepositories(session))
+
+def get_user_service(session: SessionDep) -> UserServices: 
+    return UserServices(UsersRepositories(session))
+
+AuthServiceDep = Annotated[AuthServices, Depends(get_auth_service)]
+UserServiceDep = Annotated[UserServices, Depends(get_user_service)]
+
+
+
+
+
