@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from pydantic import ConfigDict
 from typing import Optional
 import enum
 
@@ -23,5 +24,4 @@ class UserResponse(BaseModel):
     role: UserRole
     status: bool
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
