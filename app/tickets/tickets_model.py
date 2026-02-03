@@ -17,7 +17,7 @@ class Season(enum.Enum):
     spring = 'spring'
 
 class TicketClass(enum.Enum):
-    economy = 'economy'
+    economy = 'conomy'
     comfort = 'comfort'
     business = 'business'
     first_class = 'first_class'
@@ -29,7 +29,7 @@ class TicketModel(Base):
     ticket_id: Mapped[int] = mapped_column(primary_key=True)
     
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'),index=True,nullable=False) 
-    # user: Mapped["UsersModel"] = relationship(back_populates="tickets")
+    user: Mapped["UsersModel"] = relationship(back_populates="tickets")
     
     is_delay: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     year: Mapped[int]
@@ -49,7 +49,7 @@ class TicketModel(Base):
         "origin_state",
         "dest_state"
         ),
-)
+    )
     
     crs_dep_time: Mapped[int]
     

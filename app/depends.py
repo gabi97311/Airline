@@ -23,6 +23,12 @@ def get_current_auth_user(
     user_id: int = int(payload.get("sub"))
     user = user_services.get_user_info(user_id)
     return user
+
+def check_admin_privileges(payload: dict = Depends(get_current_token_payload)):
+    role = payload.get('role')
+    if role != 'admin':
+        raise HTTPException(status_code=403, detail="You do not have enough permissions to perform this action")
+    return payload
     
 def get_auth_service(session: SessionDep) -> AuthServices:
     return AuthServices(UsersRepositories(session))
