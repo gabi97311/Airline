@@ -4,7 +4,7 @@ from sqlalchemy import Enum, Date, Boolean, ForeignKey, Index
 from app.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-# from ..models.users_model import UsersModel
+from ..models.users_model import UsersModel
 
 class TripType(enum.Enum):
     one_way = 'one-way'
@@ -28,7 +28,7 @@ class TicketModel(Base):
     
     ticket_id: Mapped[int] = mapped_column(primary_key=True)
     
-    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'),index=True,nullable=False) 
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'),index=True,nullable=True) 
     user: Mapped["UsersModel"] = relationship(back_populates="tickets")
     
     is_delay: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)

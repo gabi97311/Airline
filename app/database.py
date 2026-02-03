@@ -21,6 +21,6 @@ class Base(DeclarativeBase):
     pass 
 
 def create_table():
-    # Base.metadata.drop_all(engine)
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 

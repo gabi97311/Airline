@@ -4,7 +4,7 @@ from app.routers.auth_router import router as auth_router
 from app.routers.user_router import router as user_router
 from app.tickets.tickets_router import router as tickets_router
 
-create_table()
+# create_table()
 
 app = FastAPI()
 
