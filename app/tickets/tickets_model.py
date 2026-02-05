@@ -1,10 +1,12 @@
 import enum
 from datetime import date
-from sqlalchemy import Enum, Date, Boolean, ForeignKey, Index
+from typing import TYPE_CHECKING
+from sqlalchemy import Enum, Boolean, ForeignKey, Index
 from app.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from ..models.users_model import UsersModel
+if TYPE_CHECKING:
+    from app.models.users_model import UsersModel
 
 class TripType(enum.Enum):
     one_way = 'one-way'
@@ -17,7 +19,7 @@ class Season(enum.Enum):
     spring = 'spring'
 
 class TicketClass(enum.Enum):
-    economy = 'conomy'
+    economy = 'economy'
     comfort = 'comfort'
     business = 'business'
     first_class = 'first_class'
@@ -29,7 +31,7 @@ class TicketModel(Base):
     ticket_id: Mapped[int] = mapped_column(primary_key=True)
     
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'),index=True,nullable=True) 
-    user: Mapped["UsersModel"] = relationship(back_populates="tickets")
+    user: Mapped["UsersModel"] = relationship("UsersModel", back_populates="tickets")
     
     is_delay: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     year: Mapped[int]
