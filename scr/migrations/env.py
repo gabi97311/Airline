@@ -15,9 +15,8 @@ from app.config import settings
 from app.database import Base
 
 #import all models
-from app.models.users_model import UsersModel
-from app.tickets.tickets_model import TicketModel
 
+from app.models import *
 
 
 config = context.config
