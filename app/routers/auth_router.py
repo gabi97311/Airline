@@ -1,9 +1,5 @@
-from fastapi import APIRouter, Depends, Form
-
-from app.database import SessionDep
+from fastapi import APIRouter, Form
 from app.schemes import RegisterSchemes
-from app.services import AuthServices
-from app.repositories import UsersRepositories
 from app.depends import AuthServiceDep
 
 router = APIRouter(prefix='/auth', tags=['Auth'])
@@ -26,6 +22,8 @@ def login(
         user_name,
         user_password
     )
+    
+
 
 
 

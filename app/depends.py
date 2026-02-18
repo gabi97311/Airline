@@ -4,9 +4,12 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials\
     
 from app.jwt import decode_jwt
 from app.database import SessionDep
-from app.repositories.users_repositories import UsersRepositories
 from app.services.auth_services import AuthServices
 from app.services.user_services import UserServices
+from app.services.flight_ticket_services import FlightTicketServices
+
+from app.repositories.users_repositories import UsersRepositories
+from app.repositories.flight_ticket_repositories import FlightTicketRepositories
 
 http_bearer = HTTPBearer()
 
@@ -24,6 +27,7 @@ def get_current_auth_user(
     user = user_services.get_user_info(user_id)
     return user
 
+
 def check_admin_privileges(payload: dict = Depends(get_current_token_payload)):
     role = payload.get('role')
     if role != 'admin':
@@ -36,8 +40,13 @@ def get_auth_service(session: SessionDep) -> AuthServices:
 def get_user_service(session: SessionDep) -> UserServices: 
     return UserServices(UsersRepositories(session))
 
+def get_ticket_service(session: SessionDep) -> FlightTicketServices:
+    return FlightTicketServices(FlightTicketRepositories(session))
+    
+
 AuthServiceDep = Annotated[AuthServices, Depends(get_auth_service)]
 UserServiceDep = Annotated[UserServices, Depends(get_user_service)]
+TicketServiceDep = Annotated[FlightTicketServices, Depends(get_ticket_service)]
 
 
 
