@@ -39,7 +39,7 @@ class AuthServices:
         jwt_playload = {
             'sub': str(user.id),
             'user_name' : user.user_name,
-            'role' : user.role,
+            'role' : user.role.value,
         }
         token = encode_jwt(jwt_playload)
         

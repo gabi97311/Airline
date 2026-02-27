@@ -27,6 +27,8 @@ class Ticket(Base):
     flight_id: Mapped[int] = mapped_column(ForeignKey('flights.flight_id'))
     flight: Mapped["Flight"] = relationship(back_populates="tickets")
     
+    passenger_name: Mapped[str]
+    
     purchase_time: Mapped[datetime] = mapped_column(server_default=func.now())
     
     flight_time: Mapped[datetime]

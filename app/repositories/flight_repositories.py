@@ -1,19 +1,20 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func, select, asc, desc
-from app.schemes.flight_ticket_schemes import FlightTicketQueary, FlightRevalidate
+from sqlalchemy import func, select, asc, desc, update
+from app.schemes.flight_schemes import FlightQuery
 from app.models.flight_models import Flight as fl
 from app.models.seat_model import FlightSeat as fs, SeatStatus
 
-class FlightTicketRepositories:
+class FlightRepositories:
     def __init__(self, session: Session):
         self.session = session 
-        self.session.select
+        
+    def commit(self):
+        self.session.commit()
     
-    def get_flight_by_id(self,flight_id: int) -> fl | None:
-        stmt = select(fl).where(fl.flight_id == flight_id)
-        return self.session.execute(stmt).scalar().first()
-    
-    def get_flight_list(self, query:FlightTicketQueary) -> fl: 
+    def get_flight_by_id(self, flight_id:int) -> fl | None: 
+       return self.session.get(fl,flight_id)
+        
+    def get_flight_list(self, query:FlightQuery) -> fl: 
         
         stmt = (select(fl,func.min(fs.price).label('min_price')).join(fl.seats).where(fs.seat_status == SeatStatus.free))
         
@@ -50,4 +51,5 @@ class FlightTicketRepositories:
         result = self.session.execute(stmt)
     
         return result.mappings().all()
-    
+        
+        

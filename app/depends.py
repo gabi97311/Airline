@@ -1,23 +1,38 @@
 from typing import Annotated
-from fastapi import Depends, HTTPException
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials\
+from fastapi import Depends, HTTPException, Cookie, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
     
 from app.jwt import decode_jwt
 from app.database import SessionDep
 from app.services.auth_services import AuthServices
 from app.services.user_services import UserServices
-from app.services.flight_ticket_services import FlightTicketServices
+from app.services.flight_services import FlightServices
+from app.services.seat_services import SeatServices
 
 from app.repositories.users_repositories import UsersRepositories
-from app.repositories.flight_ticket_repositories import FlightTicketRepositories
+from app.repositories.flight_repositories import FlightRepositories
+from app.repositories.seat_repositories import SeatRepositories
 
 http_bearer = HTTPBearer()
 
-def get_current_token_payload(credentials: HTTPAuthorizationCredentials = Depends(http_bearer)):
-    if not credentials:
-        raise HTTPException(status_code=404,detail='token broken')
-    token = credentials.credentials
-    payload = decode_jwt(token=token)
+def get_current_token_payload(
+    access_token: str | None = Cookie(default=None) 
+):
+
+    if not access_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail='Token invalid'
+        )
+    
+    payload = decode_jwt(token=access_token)
+    
+    if not payload:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail='Token invalid'
+        )
+        
     return payload
 
 def get_current_auth_user(
@@ -40,13 +55,17 @@ def get_auth_service(session: SessionDep) -> AuthServices:
 def get_user_service(session: SessionDep) -> UserServices: 
     return UserServices(UsersRepositories(session))
 
-def get_ticket_service(session: SessionDep) -> FlightTicketServices:
-    return FlightTicketServices(FlightTicketRepositories(session))
+def get_ticket_service(session: SessionDep) -> FlightServices:
+    return FlightServices(FlightRepositories(session))
+
+def get_seat_service(session: SessionDep) -> SeatServices:
+    return SeatServices(SeatRepositories(session))
     
 
 AuthServiceDep = Annotated[AuthServices, Depends(get_auth_service)]
 UserServiceDep = Annotated[UserServices, Depends(get_user_service)]
-TicketServiceDep = Annotated[FlightTicketServices, Depends(get_ticket_service)]
+TicketServiceDep = Annotated[FlightServices, Depends(get_ticket_service)]
+SeatServiceDop = Annotated[SeatServices, Depends(get_seat_service)]
 
 
 

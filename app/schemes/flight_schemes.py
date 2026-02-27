@@ -12,10 +12,10 @@ class FlightTicketSchemes(BaseModel):
     is_delay: bool 
 
 
-class FlightTicketCreate(BaseModel):
+class FlightCreate(BaseModel):
     pass
 
-class FlightTicketResponse(BaseModel): 
+class FlightResponse(BaseModel): 
     flight_id: int 
     reporting_airline: str
     origin: str
@@ -27,7 +27,7 @@ class FlightRevalidate(BaseModel):
     flight_id: int 
     price: float
     
-class FlightTicketQueary(BaseModel):
+class FlightQuery(BaseModel):
     flight_date: Optional[date]
     origin: Optional[str]
     dest: Optional[str]

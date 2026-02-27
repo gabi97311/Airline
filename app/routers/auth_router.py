@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Form
+from fastapi import APIRouter, Form, Response
 from app.schemes import RegisterSchemes
 from app.depends import AuthServiceDep
 
@@ -14,14 +14,25 @@ def register_new_user(user: RegisterSchemes, auth_service: AuthServiceDep):
 
 @router.post('/login')
 def login(
+    response: Response,
     auth_service: AuthServiceDep,
     user_name: str = Form(...),
     user_password: str = Form(...)
 ):
-    return auth_service.login(
-        user_name,
-        user_password
+    try: 
+        token_info = auth_service.login(user_name, user_password)
+    except Exception as e: 
+        return e
+
+    response.set_cookie(
+        key="access_token",   
+        value=token_info.access_token,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=3600
     )
+    return {"message": "Sussesful, token has be save in cookies"}
     
 
 
