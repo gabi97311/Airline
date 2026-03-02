@@ -1,20 +1,17 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func, select, asc, desc, update
-from app.schemes.flight_schemes import FlightQuery
+from sqlalchemy import RowMapping, Sequence, func, select, asc, desc, update, insert
+from app.schemes.flight_schemes import FlightQuery, FlightCreate
 from app.models.flight_models import Flight as fl
 from app.models.seat_model import FlightSeat as fs, SeatStatus
 
 class FlightRepositories:
     def __init__(self, session: Session):
         self.session = session 
-        
-    def commit(self):
-        self.session.commit()
     
     def get_flight_by_id(self, flight_id:int) -> fl | None: 
        return self.session.get(fl,flight_id)
         
-    def get_flight_list(self, query:FlightQuery) -> fl: 
+    def get_flight_list(self, query:FlightQuery) -> Sequence[RowMapping]: 
         
         stmt = (select(fl,func.min(fs.price).label('min_price')).join(fl.seats).where(fs.seat_status == SeatStatus.free))
         
@@ -33,8 +30,6 @@ class FlightRepositories:
             stmt = stmt.where(fs.price <= query.max_price)
         if query.ticket_class:
             stmt = stmt.where(fs.seat_class == query.ticket_class)
-        if query.trip_type:
-            stmt = stmt.where(fs.trip_type == query.trip_type)
         
         stmt.group_by(fl.flight_id)
             
@@ -52,4 +47,24 @@ class FlightRepositories:
     
         return result.mappings().all()
         
+    def create_flight(self, flight_details: FlightCreate) -> fl:
+        stmt = (insert(fl)
+                .values(**flight_details.model_dump())
+                .returning(fl)
+                )
+        result = self.session.execute(stmt)
+        flight = result.scalar_one()
+        return flight
+        
+        
+        
+#class FlightTicketSchemes(BaseModel):
+    
+    # flight_date: date
+    # reporting_airline: str
+    # origin: str
+    # dest: str
+    # plane_model: str
+    # is_delay: bool
+
         

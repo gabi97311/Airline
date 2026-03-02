@@ -18,7 +18,8 @@ class Flight(Base):
     origin: Mapped[str]
     dest: Mapped[str]
     plane_model: Mapped[str]
-    is_delay: Mapped[bool]
+    airplane_id: Mapped[int] = mapped_column(ForeignKey('airplanes.airplane_id'))
+    is_delay: Mapped[bool] = mapped_column(default=False, server_default="False")
     
     seats: Mapped[List["FlightSeat"]] = relationship(back_populates="flight", lazy="select")
     tickets: Mapped[List['Ticket']] = relationship(back_populates='flight')
@@ -44,10 +45,4 @@ class FlightDetails(Base):
     arr_delay: Mapped[float] 
     arr_delay_minutes: Mapped[float]
     air_time: Mapped[float]
-    
-    total_seat: Mapped[int]
-    first_class_seat: Mapped[int]
-    business_class_seats: Mapped[int]
-    comfort_class_seats: Mapped[int]
-    economy_class_seats: Mapped[int]
     

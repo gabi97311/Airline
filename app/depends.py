@@ -8,10 +8,12 @@ from app.services.auth_services import AuthServices
 from app.services.user_services import UserServices
 from app.services.flight_services import FlightServices
 from app.services.seat_services import SeatServices
+from app.services.ticket_services import TicketServices
 
 from app.repositories.users_repositories import UsersRepositories
 from app.repositories.flight_repositories import FlightRepositories
 from app.repositories.seat_repositories import SeatRepositories
+from app.repositories.ticket_repositories import TicketRepositories 
 
 http_bearer = HTTPBearer()
 
@@ -55,17 +57,21 @@ def get_auth_service(session: SessionDep) -> AuthServices:
 def get_user_service(session: SessionDep) -> UserServices: 
     return UserServices(UsersRepositories(session))
 
-def get_ticket_service(session: SessionDep) -> FlightServices:
+def get_flight_service(session: SessionDep) -> FlightServices:
     return FlightServices(FlightRepositories(session))
 
 def get_seat_service(session: SessionDep) -> SeatServices:
     return SeatServices(SeatRepositories(session))
+
+def get_ticket_serivce(session: SessionDep) -> TicketServices:
+    return TicketServices(TicketRepositories(session))
     
 
 AuthServiceDep = Annotated[AuthServices, Depends(get_auth_service)]
 UserServiceDep = Annotated[UserServices, Depends(get_user_service)]
-TicketServiceDep = Annotated[FlightServices, Depends(get_ticket_service)]
+FlightServiceDep = Annotated[FlightServices, Depends(get_flight_service)]
 SeatServiceDop = Annotated[SeatServices, Depends(get_seat_service)]
+TicketServiceDep = Annotated[TicketServices, Depends(get_ticket_serivce)]
 
 
 

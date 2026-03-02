@@ -10,9 +10,6 @@ if TYPE_CHECKING:
     from app.models.flight_models import Flight
     from app.models.ticket_model import Ticket
     
-class TripType(enum.Enum):
-    one_way = 'One way'
-    round_trip = 'Round trip'
 class SeatClass(enum.Enum):
     economy = 'Economy'
     business = 'Business'
@@ -41,5 +38,4 @@ class FlightSeat(Base):
     seat_class: Mapped[SeatClass] = mapped_column(Enum(SeatClass, name='seat_class'), default=SeatClass.economy, server_default="Economy")
     price: Mapped[float]
     seat_status: Mapped[SeatStatus] = mapped_column( Enum(SeatStatus, name='seat_status'),default=SeatStatus.free, server_default="Free")
-    trip_type: Mapped[TripType] = mapped_column(Enum(TripType, name = 'trip_type'),default=TripType.one_way, server_default='One way')
     

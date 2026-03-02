@@ -1,19 +1,32 @@
 from fastapi import HTTPException,status
 
+from app.schemes.flight_schemes import FlightQuery, FlightCreate
 from app.repositories.flight_repositories import FlightRepositories
-from app.schemes.flight_schemes import FlightQuery
-from app.schemes.user_schemes import UserResponse
+from app.services.seat_services import SeatServices 
 
 class FlightServices:
-    def __init__(self,flight_repo: FlightRepositories): 
-        self.flight_repo = flight_repo
+    def __init__(self, repository: FlightRepositories, seat_service: SeatServices): 
+        self.repository = repository
+        self.session = repository.session
+        self.seat_service = seat_service
+        
         
     def get_flight_list(self, query: FlightQuery):
-        return self.flight_repo.get_flight_list(query)
+        return self.repository.get_flight_list(query)
     
     def get_flight_by_id(self, flight_id:int):
-        if flight:= self.flight_repo.get_flight_by_id(flight_id):
+        if flight:= self.repository.get_flight_by_id(flight_id):
             return flight
         else: 
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='flight not found')
     
+    def create_flight(self,flight_details: FlightCreate):
+        try:
+            flight = self.repository.create_flight(flight_details)
+            if not flight:
+                raise ValueError("Couldn't create flight in the database")
+            self.seat_service.generate_seats_for_flight(flight.flight_id)
+        except Exception as e:
+            self.session.rollback()
+            raise e
+        

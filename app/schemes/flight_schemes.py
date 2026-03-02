@@ -9,10 +9,10 @@ class FlightTicketSchemes(BaseModel):
     origin: str
     dest: str
     plane_model: str
-    is_delay: bool 
+    is_delay: bool = False
 
 
-class FlightCreate(BaseModel):
+class FlightCreate(FlightTicketSchemes):
     pass
 
 class FlightResponse(BaseModel): 
@@ -34,7 +34,6 @@ class FlightQuery(BaseModel):
     min_price: Optional[float]
     max_price: Optional[float]
     ticket_class: Optional[Literal['economy','comfort','business','first_class']]
-    trip_type: Optional[Literal['one-way','round-trip']]
     sort_by: Optional[Literal['price', 'flight_date']] = 'price'
     sort_order: Optional[Literal['asc', 'desc']] = 'asc'
     page: int = Field(default=1, ge=1)
