@@ -8,6 +8,7 @@ from app.database import Base
 if TYPE_CHECKING:
     from .seat_model import FlightSeat
     from .ticket_model import Ticket
+    from .airplane_models import Airplane
 
 class Flight(Base): 
     __tablename__ = 'flights'
@@ -17,10 +18,10 @@ class Flight(Base):
     reporting_airline: Mapped[str]
     origin: Mapped[str]
     dest: Mapped[str]
-    plane_model: Mapped[str]
     airplane_id: Mapped[int] = mapped_column(ForeignKey('airplanes.airplane_id'))
     is_delay: Mapped[bool] = mapped_column(default=False, server_default="False")
     
+    airplane: Mapped["Airplane"] = relationship(back_populates="flights")
     seats: Mapped[List["FlightSeat"]] = relationship(back_populates="flight", lazy="select")
     tickets: Mapped[List['Ticket']] = relationship(back_populates='flight')
     details: Mapped["FlightDetails"] = relationship(back_populates='flight')

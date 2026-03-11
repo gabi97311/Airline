@@ -8,9 +8,6 @@ class SeatRepositories:
     
     def __init__(self,session:Session):
         self.session = session
-        
-    def commit(self):
-        self.session.commit()
     
     def get_seat_by_id(self, seat_id:int): 
         return self.session.get(fs,seat_id)

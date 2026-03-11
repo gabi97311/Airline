@@ -58,13 +58,6 @@ class FlightRepositories:
         
         
         
-#class FlightTicketSchemes(BaseModel):
-    
-    # flight_date: date
-    # reporting_airline: str
-    # origin: str
-    # dest: str
-    # plane_model: str
-    # is_delay: bool
+
 
         

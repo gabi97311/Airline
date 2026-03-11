@@ -10,7 +10,6 @@ app = typer.Typer()
 def createsuperuser(username: str, password: str
 ):
     db = SessionLocal()
-    
     try: 
         existing_user = db.query(UsersModel).filter(UsersModel.user_name == username).first()
         if existing_user: 
