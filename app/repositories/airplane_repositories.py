@@ -19,7 +19,7 @@ class AirplaneRepositories:
     def get_airline_list(self) -> list[Airplane] | None:
         stmt = select(Airplane)
         result = self.session.execute(stmt)
-        return result.scalars()
+        return result.scalars().all()
         
     def create_airplane(self, airplane: Airplane):
         try:

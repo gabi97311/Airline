@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
-from app.schemes.airplane_schemes import AirplaneCreate
+from app.schemes.airplane_schemes import AirplaneCreate, AirplaneResponse 
 from app.depends import AirplaneServiceDep, check_admin_privileges
 
-router = APIRouter(prefix='/airplane',tags=['Airplane'])
+router = APIRouter(prefix='/airplanes',tags=['Airplane'])
 
 @router.post('/')
 def add_airplane(
@@ -11,3 +11,9 @@ def add_airplane(
     admin: dict = Depends(check_admin_privileges)
     ):
     return airplane_service.create_airplane(airplane_details)
+
+@router.get("/",response_model=list[AirplaneResponse])
+def get_airplane(
+    airplane_service: AirplaneServiceDep
+): 
+    return airplane_service.get_airplane_list()

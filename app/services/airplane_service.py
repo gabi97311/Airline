@@ -24,4 +24,6 @@ class AirplaneServices:
         
         if not airplanes:
             raise HTTPException(status_code=404, detail='Airplane not found')
+        
+        return airplanes
             
