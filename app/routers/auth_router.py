@@ -6,21 +6,21 @@ router = APIRouter(prefix='/auth', tags=['Auth'])
 
 
 @router.post('/register')
-def register_new_user(user: RegisterSchemes, auth_service: AuthServiceDep):
-    return (auth_service.register(
+async def register_new_user(user: RegisterSchemes, auth_service: AuthServiceDep):
+    return (await auth_service.register(
         user.user_name,
         user.user_password
     ))
 
 @router.post('/login')
-def login(
+async def login(
     response: Response,
     auth_service: AuthServiceDep,
     user_name: str = Form(...),
     user_password: str = Form(...)
 ):
     try: 
-        token_info = auth_service.login(user_name, user_password)
+        token_info = await auth_service.login(user_name, user_password)
     except Exception as e: 
         return e
 

@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import Depends, HTTPException, Cookie, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPBearer
     
 from app.jwt import decode_jwt
 from app.database import SessionDep

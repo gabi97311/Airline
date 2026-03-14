@@ -7,13 +7,15 @@ from app.repositories import UsersRepositories
 from app.jwt import encode_jwt
 
 
+
+
 class AuthServices: 
     
     def __init__(self, user_repo: UsersRepositories):
         self.user_repo = user_repo
         
-    def register(self, user_name:str, user_password:str ) -> UsersModel:
-        if self.user_repo.get_by_username(user_name):
+    async def register(self, user_name:str, user_password:str ) -> UsersModel:
+        if await self.user_repo.get_by_username(user_name):
             raise HTTPException(status_code=409, detail='User already exists')
         
         salt, hash_password = getHash(user_password)
@@ -23,12 +25,12 @@ class AuthServices:
             user_password = hash_password,
             salt = salt 
         )
-        self.user_repo.add(user)
+        await self.user_repo.add(user)
         return {'message':"User created successfully"}
     
     
-    def login(self, user_name:str, user_password:str) -> TokenInfo: 
-        if not(user := self.user_repo.get_by_username(user_name)):
+    async def login(self, user_name:str, user_password:str) -> TokenInfo: 
+        if not(user := await self.user_repo.get_by_username(user_name)):
             raise HTTPException(status_code=401, detail='invalid username or password')
     
         password = get_hash_to_auth(user.salt, user_password)
