@@ -9,6 +9,7 @@ class UsersRepositories:
     async def add(self, user: UsersModel) -> None: 
         self.session.add(user)
         await self.session.commit()
+        await self.session.refresh(user)
         
     async def get_by_username(self,user_name: str) -> UsersModel | None:
         stmt = select(UsersModel).where(UsersModel.user_name == user_name)

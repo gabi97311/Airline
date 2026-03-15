@@ -3,7 +3,7 @@ from fastapi import Depends, HTTPException, Cookie, status
 from fastapi.security import HTTPBearer
     
 from app.jwt import decode_jwt
-from app.database import SessionDep
+from app.database import AsyncSessionDep
 
 from app.services.auth_services import AuthServices
 from app.services.user_services import UserServices
@@ -55,23 +55,23 @@ def check_admin_privileges(payload: dict = Depends(get_current_token_payload)):
         raise HTTPException(status_code=403, detail="You do not have enough permissions to perform this action")
     return payload
     
-def get_auth_service(session: SessionDep) -> AuthServices:
+def get_auth_service(session: AsyncSessionDep) -> AuthServices:
     return AuthServices(UsersRepositories(session))
 
-def get_user_service(session: SessionDep) -> UserServices: 
+def get_user_service(session: AsyncSessionDep) -> UserServices: 
     return UserServices(UsersRepositories(session))
 
-def get_flight_service(session: SessionDep) -> FlightServices:
+def get_flight_service(session: AsyncSessionDep) -> FlightServices:
     return FlightServices(FlightRepositories(session))
 
-def get_seat_service(session: SessionDep) -> SeatServices:
+def get_seat_service(session: AsyncSessionDep) -> SeatServices:
     return SeatServices(SeatRepositories(session))
 
-def get_ticket_serivce(session: SessionDep) -> TicketServices:
+def get_ticket_serivce(session: AsyncSessionDep) -> TicketServices:
     return TicketServices(TicketRepositories(session))
     
-def get_airplane_service(session: SessionDep) -> AirplaneServices:
-    return AirplaneServices(session,AirplaneRepositories(session))
+def get_airplane_service(session: AsyncSessionDep) -> AirplaneServices:
+    return AirplaneServices(session, AirplaneRepositories(session))
 
 AuthServiceDep = Annotated[AuthServices, Depends(get_auth_service)]
 UserServiceDep = Annotated[UserServices, Depends(get_user_service)]

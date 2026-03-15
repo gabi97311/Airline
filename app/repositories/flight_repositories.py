@@ -1,17 +1,17 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import RowMapping, Sequence, func, select, asc, desc, update, insert
 from app.schemes.flight_schemes import FlightQuery, FlightCreate
 from app.models.flight_models import Flight as fl
 from app.models.seat_model import FlightSeat as fs, SeatStatus
 
 class FlightRepositories:
-    def __init__(self, session: Session):
+    async def __init__(self, session: AsyncSession):
         self.session = session 
     
-    def get_flight_by_id(self, flight_id:int) -> fl | None: 
-       return self.session.get(fl,flight_id)
+    async def get_flight_by_id(self, flight_id:int) -> fl | None: 
+       return await self.session.get(fl,flight_id)
         
-    def get_flight_list(self, query:FlightQuery) -> Sequence[RowMapping]: 
+    async def get_flight_list(self, query:FlightQuery) -> Sequence[RowMapping]: 
         
         stmt = (select(fl,func.min(fs.price).label('min_price')).join(fl.seats).where(fs.seat_status == SeatStatus.free))
         
@@ -43,18 +43,20 @@ class FlightRepositories:
         offset_value = (query.page - 1) * query.size
         stmt = stmt.limit(query.size).offset(offset_value)
         
-        result = self.session.execute(stmt)
+        result = await self.session.execute(stmt)
     
         return result.mappings().all()
         
-    def create_flight(self, flight_details: FlightCreate) -> fl:
+    async def create_flight(self, flight_details: FlightCreate) -> fl:
         stmt = (insert(fl)
                 .values(**flight_details.model_dump())
                 .returning(fl)
                 )
-        result = self.session.execute(stmt)
+        result = await self.session.execute(stmt)
         flight = result.scalar_one()
         return flight
+        
+        
         
         
         

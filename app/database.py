@@ -16,7 +16,7 @@ async def get_session():
     async with AsyncSessionLocal() as session:
         yield session
 
-SessionDep = Annotated[AsyncSession, Depends(get_session)]
+AsyncSessionDep = Annotated[AsyncSession, Depends(get_session)]
 
 class Base(DeclarativeBase):
     pass 

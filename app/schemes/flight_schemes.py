@@ -8,7 +8,7 @@ class FlightTicketSchemes(BaseModel):
     reporting_airline: str
     origin: str
     dest: str
-    plane_model: str
+    airplane_id: int
     is_delay: bool = False
 
 

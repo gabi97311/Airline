@@ -13,3 +13,10 @@ class AirplaneCreate(AirplaneShemes):
 
 class AirplaneResponse(AirplaneShemes):
     airplane_id: int
+    
+class AirplaneOptions(BaseModel):
+    airplane_id: int
+    model_name: str
+    
+    class Config:
+        from_attributes = True
