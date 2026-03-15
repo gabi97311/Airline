@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import FastAPI
 from app.database import create_table
 from app.routers.auth_router import router as auth_router

@@ -1,26 +1,28 @@
 from fastapi import HTTPException,status
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.schemes.flight_schemes import FlightQuery, FlightCreate
-from app.repositories.flight_repositories import FlightRepositories
-from app.services.seat_services import SeatServices 
-from app.models.airplane_models import Airplane
 
+from app.schemes.flight_schemes import FlightQuery, FlightCreate
+from app.services.seat_services import SeatServices 
+from app.services.airplane_service import AirplaneServices
+
+from app.models.flight_models import Flight
+
+from app.repositories.flight_repositories import FlightRepositories
 
 
 class FlightServices:
-    async def __init__(
+    def __init__(
         self,
         repository: FlightRepositories,
         seat_service: SeatServices,
-        airplane: Airplane,
+        airplane_service:AirplaneServices,
         session = AsyncSession
         ): 
         
         self.repository = repository
         self.seat_service = seat_service
-        self.airplane = airplane
-        self.session = self.session
-        
+        self.airplane_service = airplane_service
+        self.session = session
         
         
     async def get_flight_list(self, query: FlightQuery):
@@ -33,7 +35,22 @@ class FlightServices:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='flight not found')
         
     async def create_flight(self, flight_details: FlightCreate):
-        pass 
+        
+        if not (airplane := await self.airplane_service.get_airplane_by_id(flight_details.airplane_id)):
+            raise HTTPException(status_code=404, detail='Airplane not found')
+        
+        flight = Flight(**flight_details.model_dump())
+        
+        try: 
+            await self.repository.create_flight(flight)
+            await self.seat_service.generate_seats_for_flight(flight.flight_id, airplane) 
+            await self.session.commit()
+            await self.session.refresh(flight)
+            return flight
+        except Exception as e: 
+            await self.session.rollback()
+            raise HTTPException(status_code=500, detail="Failed to create flight and seats")
+        
     
 
         

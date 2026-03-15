@@ -15,7 +15,8 @@ class AirplaneRepositories:
     
     async def get_by_name(self, model: str) -> Airplane | None: 
         airplane = select(Airplane).where(Airplane.model_name == model)
-        return await self.session.execute(airplane).scalar()
+        result = await self.session.execute(airplane)
+        return result.scalar_one()
     
     async def get_airline_list(self) -> list[Airplane] | None:
         stmt = select(Airplane)

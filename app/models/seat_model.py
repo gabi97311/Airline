@@ -10,20 +10,20 @@ if TYPE_CHECKING:
     from app.models.flight_models import Flight
     from app.models.ticket_model import Ticket
     
-class SeatClass(enum.Enum):
+class SeatClass(str, enum.Enum):
     economy = 'Economy'
     business = 'Business'
     comfort = 'Comfort'
     first = 'First'
     
-class SeatStatus(enum.Enum):
+class SeatStatus(str,  enum.Enum):
     free = 'Free'
     occupied = 'Occupied'
     booked = 'Booked'
     blocked = 'Blocked'
     
     
-class FlightSeat(Base): 
+class Seat(Base): 
     
     __tablename__ = 'seats'
     
