@@ -1,7 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession 
-from fastapi import HTTPException
 
-import pandas as pd
 import numpy as np
 
 from app.models.seat_model import Seat
@@ -9,31 +7,27 @@ from app.models.airplane_models import Airplane
 from app.schemes.seat_schemes import SeatClass, SeatStatus
 
 from app.repositories.seat_repositories import SeatRepositories
-from app.repositories.flight_repositories import FlightRepositories
 
 class SeatServices:
-    def __init__(self,session: AsyncSession, seat_repo: SeatRepositories, flight_repo: FlightRepositories):
+    def __init__(self,session: AsyncSession, seat_repo: SeatRepositories):
         self.session = session
         self.seat_repo = seat_repo
-        self.flight_repo = flight_repo
-    
+
     async def get_seat_list(self, flight_id: int):
-        if await self.flight_repo.get_flight_by_id(flight_id):
-            raise HTTPException(status_code=404, detail='flight not found')
-        
         seats = await self.seat_repo.get_seat_list(flight_id)
         return seats
         
     async def generate_seats_for_flight(self, flight_id: int, airplane: Airplane):
-        seat_data = self._build_seat_dataframe(flight_id, airplane)
-        seat = Seat(**seat_data)
+        seats_data_list = self._build_seat_dataframe(flight_id, airplane)
         try:
+           for seat_dict in seats_data_list:
+            seat = Seat(**seat_dict)
             await self.seat_repo.add_seat(seat)
         except Exception as e: 
-            await self.session.rollback
+            await self.session.rollback()
             raise e
     
-    def _build_seat_dataframe(flight_id:int ,airplane: Airplane):
+    def _build_seat_dataframe(self,flight_id:int ,airplane: Airplane):
         max_seat = airplane.max_seats
         default_price = np.random.randint(45,55)
         letters = ['A','B','C','D','E','F']

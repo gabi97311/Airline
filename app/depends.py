@@ -61,11 +61,21 @@ def get_auth_service(session: AsyncSessionDep) -> AuthServices:
 def get_user_service(session: AsyncSessionDep) -> UserServices: 
     return UserServices(UsersRepositories(session))
 
-def get_flight_service(session: AsyncSessionDep) -> FlightServices:
-    return FlightServices(FlightRepositories(session))
+def get_flight_service(
+    session: AsyncSessionDep,
+    seat_service: SeatServiceDep,
+    airplane_service: AirplaneServiceDep
+    
+    ) -> FlightServices:
+    return FlightServices(
+        session,
+        FlightRepositories(session),
+        seat_service,
+        airplane_service,
+        )
 
 def get_seat_service(session: AsyncSessionDep) -> SeatServices:
-    return SeatServices(SeatRepositories(session))
+    return SeatServices(session,SeatRepositories(session))
 
 def get_ticket_serivce(session: AsyncSessionDep) -> TicketServices:
     return TicketServices(TicketRepositories(session))
@@ -76,7 +86,7 @@ def get_airplane_service(session: AsyncSessionDep) -> AirplaneServices:
 AuthServiceDep = Annotated[AuthServices, Depends(get_auth_service)]
 UserServiceDep = Annotated[UserServices, Depends(get_user_service)]
 FlightServiceDep = Annotated[FlightServices, Depends(get_flight_service)]
-SeatServiceDop = Annotated[SeatServices, Depends(get_seat_service)]
+SeatServiceDep = Annotated[SeatServices, Depends(get_seat_service)]
 TicketServiceDep = Annotated[TicketServices, Depends(get_ticket_serivce)]
 AirplaneServiceDep = Annotated[AirplaneServices,Depends(get_airplane_service)]
 

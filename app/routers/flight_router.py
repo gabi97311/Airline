@@ -10,7 +10,7 @@ async def create_flight(
     flight_details: FlightCreate = Depends(),
     admin: dict = Depends(check_admin_privileges)):
     # print(f"Рейс создает админ: {admin.get('sub')}")
-    return await flight_service.create_flight()
+    return await flight_service.create_flight(flight_details)
 
 @router.get('/')
 async def get_flights(flight_service: FlightServiceDep, flight_query: FlightQuery = Depends()):

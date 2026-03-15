@@ -1,7 +1,8 @@
 from fastapi import APIRouter
+from app.depends import SeatServiceDep
+from app.schemes.seat_schemes import SeatResponse
+router = APIRouter(prefix='/seats', tags=['Seat'])
 
-router = APIRouter(prefix='/seat', tags=['Seat'])
-
-@router.get('get_seat_list')
-def get_seat_list():
-    return 'hello'
+@router.get('/', response_model = list[SeatResponse])
+async def get_seat_list(flight_id:int,seat_service: SeatServiceDep):
+    return await seat_service.get_seat_list(flight_id)

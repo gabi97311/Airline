@@ -16,7 +16,7 @@ class SeatClass(str, enum.Enum):
     comfort = 'Comfort'
     first = 'First'
     
-class SeatStatus(str,  enum.Enum):
+class SeatStatus(str, enum.Enum):
     free = 'Free'
     occupied = 'Occupied'
     booked = 'Booked'
@@ -35,7 +35,24 @@ class Seat(Base):
     ticket: Mapped['Ticket'] = relationship(back_populates='seat')
     
     seat_code: Mapped[str]
-    seat_class: Mapped[SeatClass] = mapped_column(Enum(SeatClass, name='seat_class'), default=SeatClass.economy, server_default="Economy")
+    seat_class: Mapped[SeatClass] = mapped_column(
+        Enum(
+            SeatClass, 
+            name='seat_class', 
+            values_callable=lambda obj: [e.value for e in obj]
+        ), 
+        default=SeatClass.economy, 
+        server_default="Economy"
+    )
     price: Mapped[float]
-    seat_status: Mapped[SeatStatus] = mapped_column( Enum(SeatStatus, name='seat_status'),default=SeatStatus.free, server_default="Free")
+    seat_status: Mapped[SeatStatus] = mapped_column( 
+        Enum(
+            SeatStatus, 
+            name='seat_status',
+            # Эта строка заставляет брать 'Free' вместо 'free'
+            values_callable=lambda obj: [e.value for e in obj]
+        ),
+        default=SeatStatus.free, 
+        server_default="Free"
+    )
     

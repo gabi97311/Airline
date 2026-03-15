@@ -18,7 +18,7 @@ class SeatRepositories:
         return result.scalars().all()
 
     async def add_seat(self, seat:fs):
-        await self.session.add(seat)
+        self.session.add(seat)
 
     async def get_seat_for_update(self, seat_id:int):
         stmt = select(fs).where(fs.seat_id == seat_id).with_for_update()

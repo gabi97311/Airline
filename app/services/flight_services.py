@@ -13,10 +13,10 @@ from app.repositories.flight_repositories import FlightRepositories
 class FlightServices:
     def __init__(
         self,
+        session: AsyncSession,
         repository: FlightRepositories,
         seat_service: SeatServices,
-        airplane_service:AirplaneServices,
-        session = AsyncSession
+        airplane_service:AirplaneServices
         ): 
         
         self.repository = repository
@@ -49,7 +49,7 @@ class FlightServices:
             return flight
         except Exception as e: 
             await self.session.rollback()
-            raise HTTPException(status_code=500, detail="Failed to create flight and seats")
+            raise e 
         
     
 

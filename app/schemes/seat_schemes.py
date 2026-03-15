@@ -14,8 +14,13 @@ class SeatCreate(BaseModel):
     price: float
     seat_status: SeatStatus 
     
-class SeatResponse(SeatShemes):
+    model_config = ConfigDict(from_attributes=True)
+    
+class SeatResponse(BaseModel):
     seat_id: int
+    seat_code: str 
+    seat_class: SeatClass
+    price: float
     seat_status: SeatStatus
     
     model_config = ConfigDict(from_attributes=True)

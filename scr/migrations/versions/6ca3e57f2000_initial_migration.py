@@ -78,7 +78,7 @@ def upgrade() -> None:
     op.create_table('tickets',
     sa.Column('ticket_id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('seat_id', sa.Integer(), nullable=False),
+    sa.Column('seat_id', sa.Integer(), nullable=False), 
     sa.Column('flight_id', sa.Integer(), nullable=False),
     sa.Column('purchase_time', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.Column('flight_time', sa.DateTime(), nullable=False),
