@@ -29,14 +29,22 @@ class FlightRepositories:
         if query.max_price: 
             stmt = stmt.where(fs.price <= query.max_price)
         if query.ticket_class:
-            stmt = stmt.where(fs.seat_class == query.ticket_class)
+            stmt = stmt.where(fs.seat_class == query.ticket_class.capitalize())
         
         stmt.group_by(fl.flight_id)
             
         if query.sort_by == 'price':
         
             order_func = desc('min_price') if query.sort_order == 'desc' else asc('min_price')
-            stmt = stmt.order_by(order_func)
+            stmt = stmt.group_by(
+                fl.flight_id, 
+                fl.flight_date, 
+                fl.reporting_airline, 
+                fl.origin, 
+                fl.dest, 
+                fl.airplane_id, 
+                fl.is_delay
+            )
         elif query.sort_by == 'flight_date':
             stmt = stmt.order_by(fl.flight_date)
             

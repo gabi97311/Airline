@@ -20,9 +20,11 @@ class SeatServices:
     async def generate_seats_for_flight(self, flight_id: int, airplane: Airplane):
         seats_data_list = self._build_seat_dataframe(flight_id, airplane)
         try:
-           for seat_dict in seats_data_list:
-            seat = Seat(**seat_dict)
-            await self.seat_repo.add_seat(seat)
+            seat = [Seat(**seat_dict) for seat_dict in seats_data_list]
+            await self.session.add_all(seat)
+        #    for seat_dict in seats_data_list:
+        #     seat = Seat(**seat_dict)
+        #     await self.seat_repo.add_seat(seat)
         except Exception as e: 
             await self.session.rollback()
             raise e
@@ -35,10 +37,10 @@ class SeatServices:
         seat_count = 0
         
         seat_class = [
-            (SeatClass.economy, 40, 1.0),
-            (SeatClass.comfort, 30, 1.5),
-            (SeatClass.business, 20, 3),
-            (SeatClass.first, 10, 5)
+            (SeatClass.economy, 0.4, 1.0),
+            (SeatClass.comfort, 0.3, 1.5),
+            (SeatClass.business, 0.2, 3),
+            (SeatClass.first, 0.1, 5)
         ]
         
         for s_class, shape, multiplier in seat_class:

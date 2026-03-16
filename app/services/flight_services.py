@@ -25,8 +25,8 @@ class FlightServices:
         self.session = session
         
         
-    async def get_flight_list(self, query: FlightQuery):
-        return await self.repository.get_flight_list(query)
+    async def get_flight_list(self, flight_query: FlightQuery):
+        return await self.repository.get_flight_list(flight_query)
     
     async def get_flight_by_id(self, flight_id:int):
         if flight:= await self.repository.get_flight_by_id(flight_id):
