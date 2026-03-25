@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: payment_db_cont
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5433:5432"
+
+  payment-app:
+    build: .
+    volumes:
+      - .:/app
+    container_name: payment_service_cont
+    ports:
+      - "8000:80"
+    depends_on:
+      - db
+    env_file:
+      - .env

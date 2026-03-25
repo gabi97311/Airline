@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field, ConfigDict
 from decimal import Decimal
-from payment_enum import PaymentStatus
+
+from src.payment_enum import PaymentStatus
 
 class PaymentSchemes(BaseModel): 
     flight_id: int

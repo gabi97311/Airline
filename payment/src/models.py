@@ -2,10 +2,12 @@ from decimal import Decimal
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import Numeric, Enum
 
-from database import Base
-from payment_enum import PaymentStatus
+from src.database import Base
+from src.payment_enum import PaymentStatus
 
 class PaymentModel(Base): 
+    __tablename__ = 'payment'
+    
     id: Mapped[int] = mapped_column(primary_key=True)
     flight_id: Mapped[int] = mapped_column(nullable=False)
     seat_id: Mapped[int] = mapped_column(nullable=False)
