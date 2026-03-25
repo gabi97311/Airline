@@ -4,8 +4,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.airplane_models import Airplane
 
-import pandas as pd 
-
 class AirplaneRepositories: 
     def __init__(self, session: AsyncSession):
         self.session = session

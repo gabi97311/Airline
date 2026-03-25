@@ -3,7 +3,6 @@ from pydantic import BaseModel,Field
 from datetime import date 
 
 class FlightTicketSchemes(BaseModel):
-    
     flight_date: date
     reporting_airline: str
     origin: str
