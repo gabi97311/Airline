@@ -1,0 +1,63 @@
+from fastapi import APIRouter, Response, Form, HTTPException, status
+from app.schemes import RegisterSchemes
+from app.depends import AuthServiceDep
+
+router = APIRouter(prefix='/auth', tags=['Auth'])
+
+
+@router.post('/register')
+async def register_new_user(user: RegisterSchemes, auth_service: AuthServiceDep):
+    return (await auth_service.register(
+        user.user_name,
+        user.user_password
+    ))
+
+@router.post('/login')
+async def login(
+    response: Response,
+    auth_service: AuthServiceDep,
+    user_name: str = Form(...),
+    user_password: str = Form(...)
+):
+    try: 
+        # Вызываем сервис. Если там ошибка (401), она "вылетит" сюда.
+        token_info = await auth_service.login(user_name, user_password)
+        
+        # Устанавливаем куку
+        response.set_cookie(
+            key="access_token",   
+            value=token_info.access_token,
+            httponly=True,
+            secure=False,  # В продакшене (https) поставьте True
+            samesite="lax",
+            max_age=3600
+        )
+        
+        return {"message": "Successful, token has been saved in cookies"}
+
+    except HTTPException as http_ex:
+        # Если это наша преднамеренная ошибка (например, 401), пробрасываем её
+        raise http_ex
+    except Exception as e: 
+        # Если случилось что-то непредвиденное, выводим реальную ошибку в консоль
+        print(f"Error during login: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error"
+        )
+
+    # response.set_cookie(
+    #     key="access_token",   
+    #     value=token_info.access_token,
+    #     httponly=True,
+    #     secure=False,
+    #     samesite="lax",
+    #     max_age=3600
+    # )
+    # return {"message": "Sussesful, token has be save in cookies"}
+    
+
+
+
+
+
