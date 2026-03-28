@@ -14,4 +14,4 @@ async def create_ticket(
     ticket_details: TicketCreate = Depends(),
     user: User = Depends(get_current_auth_user),
 ):
-    return ticket_service.create_ticket(ticket_details, user)
+    return await ticket_service.create_ticket(ticket_details, user)

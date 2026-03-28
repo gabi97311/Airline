@@ -18,8 +18,8 @@ class SeatClass(str, enum.Enum):
     
 class SeatStatus(str, enum.Enum):
     free = 'Free'
+    pending = 'Pending'
     occupied = 'Occupied'
-    booked = 'Booked'
     blocked = 'Blocked'
     
     

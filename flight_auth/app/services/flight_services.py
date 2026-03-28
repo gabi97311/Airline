@@ -25,14 +25,19 @@ class FlightServices:
         self.session = session
         
         
-    async def get_flight_list(self, flight_query: FlightQuery):
+    async def get_flight_list(self, flight_query: FlightQuery) -> list[Flight]:
         return await self.repository.get_flight_list(flight_query)
     
-    async def get_flight_by_id(self, flight_id:int) -> Flight:
-        if flight:= await self.repository.get_flight_by_id(flight_id):
-            return flight
-        else: 
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='flight not found')
+    async def get_flight_by_id(self, flight_id: int) -> Flight:
+        flight = await self.repository.get_flight_by_id(flight_id)
+        
+        if not flight:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Flight not found"
+            )
+        
+        return flight
         
     async def create_flight(self, flight_details: FlightCreate):
         

@@ -39,11 +39,11 @@ def get_current_token_payload(access_token: str | None = Cookie(default=None)):
     return payload
 
 
-def get_current_auth_user(
+async def get_current_auth_user(
     user_services: UserServiceDep, payload: dict = Depends(get_current_token_payload)
 ):
     user_id: int = int(payload.get("sub"))
-    user = user_services.get_user_info(user_id)
+    user =  await user_services.get_user_info(user_id)
     return user
 
 
