@@ -1,10 +1,18 @@
 from pydantic_settings import BaseSettings 
+from pydantic import BaseModel
+from pathlib import Path
 
+BASE_DIR = Path(__file__).parent.parent
+
+class AuthJWT(BaseModel):
+    public_key_file: Path = BASE_DIR / 'certs' / 'jwt-public.pem' 
+    algorithm: str = 'RS256'
 
 class Settings(BaseSettings): 
     app_name: str = 'payment'
     debug: bool = True 
     DATABASE_URL: str
+    flight_auth_service: str
     
     cors_origins: list = [
         'http://localhost:3000',
@@ -12,6 +20,9 @@ class Settings(BaseSettings):
     ]
     
     static_dir: str = 'static'
+    
+    auth_jwt: AuthJWT = AuthJWT()
+    
     class Config:
         env_file = '.env'
         extra = "ignore"

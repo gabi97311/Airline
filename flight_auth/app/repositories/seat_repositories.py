@@ -28,3 +28,4 @@ class SeatRepositories:
         seat = (update(fs).where(fs.seat_id == seat_id).values(seat_status = status))
         await self.session.execute(seat)
     
+    

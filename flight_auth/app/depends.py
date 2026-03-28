@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import Depends, HTTPException, Cookie, status
 from fastapi.security import HTTPBearer
-    
+
 from app.jwt import decode_jwt
 from app.database import AsyncSessionDep
 
@@ -16,80 +16,87 @@ from app.services.airplane_service import AirplaneServices
 from app.repositories.users_repositories import UsersRepositories
 from app.repositories.flight_repositories import FlightRepositories
 from app.repositories.seat_repositories import SeatRepositories
-from app.repositories.ticket_repositories import TicketRepositories 
+from app.repositories.ticket_repositories import TicketRepositories
 from app.repositories.airplane_repositories import AirplaneRepositories
 
 http_bearer = HTTPBearer()
 
-def get_current_token_payload(
-    access_token: str | None = Cookie(default=None) 
-):
+
+def get_current_token_payload(access_token: str | None = Cookie(default=None)):
 
     if not access_token:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, 
-            detail='Token invalid'
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalid"
         )
-    
+
     payload = decode_jwt(token=access_token)
-    
+
     if not payload:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='Token invalid'
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalid"
         )
-        
+
     return payload
 
+
 def get_current_auth_user(
-    user_services: UserServiceDep,
-    payload: dict = Depends(get_current_token_payload)):
+    user_services: UserServiceDep, payload: dict = Depends(get_current_token_payload)
+):
     user_id: int = int(payload.get("sub"))
     user = user_services.get_user_info(user_id)
     return user
 
 
 def check_admin_privileges(payload: dict = Depends(get_current_token_payload)):
-    role = payload.get('role')
-    if role != 'admin':
-        raise HTTPException(status_code=403, detail="You do not have enough permissions to perform this action")
+    role = payload.get("role")
+    if role != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="You do not have enough permissions to perform this action",
+        )
     return payload
-    
+
+
 def get_auth_service(session: AsyncSessionDep) -> AuthServices:
     return AuthServices(UsersRepositories(session))
 
-def get_user_service(session: AsyncSessionDep) -> UserServices: 
+
+def get_user_service(session: AsyncSessionDep) -> UserServices:
     return UserServices(UsersRepositories(session))
+
 
 def get_flight_service(
     session: AsyncSessionDep,
     seat_service: SeatServiceDep,
-    airplane_service: AirplaneServiceDep
-    
-    ) -> FlightServices:
+    airplane_service: AirplaneServiceDep,
+) -> FlightServices:
     return FlightServices(
         session,
         FlightRepositories(session),
         seat_service,
         airplane_service,
-        )
+    )
+
+
+def get_ticket_serivce(
+    session: AsyncSessionDep,
+    flight_service: FlightServiceDep,
+    seat_service: SeatServiceDep,
+) -> TicketServices:
+    return TicketServices(TicketRepositories(session), flight_service, seat_service)
+
 
 def get_seat_service(session: AsyncSessionDep) -> SeatServices:
-    return SeatServices(session,SeatRepositories(session))
+    return SeatServices(session, SeatRepositories(session))
 
-def get_ticket_serivce(session: AsyncSessionDep) -> TicketServices:
-    return TicketServices(TicketRepositories(session))
-    
+
 def get_airplane_service(session: AsyncSessionDep) -> AirplaneServices:
     return AirplaneServices(session, AirplaneRepositories(session))
+
 
 AuthServiceDep = Annotated[AuthServices, Depends(get_auth_service)]
 UserServiceDep = Annotated[UserServices, Depends(get_user_service)]
 FlightServiceDep = Annotated[FlightServices, Depends(get_flight_service)]
 SeatServiceDep = Annotated[SeatServices, Depends(get_seat_service)]
 TicketServiceDep = Annotated[TicketServices, Depends(get_ticket_serivce)]
-AirplaneServiceDep = Annotated[AirplaneServices,Depends(get_airplane_service)]
-
-
-
-
+AirplaneServiceDep = Annotated[AirplaneServices, Depends(get_airplane_service)]

@@ -28,7 +28,7 @@ async def login(
             key="access_token",   
             value=token_info.access_token,
             httponly=True,
-            secure=False,  # В продакшене (https) поставьте True
+            secure=False,
             samesite="lax",
             max_age=3600
         )

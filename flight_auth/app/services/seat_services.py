@@ -1,4 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession 
+from fastapi import HTTPException, status
+
 
 import numpy as np
 
@@ -16,6 +18,11 @@ class SeatServices:
     async def get_seat_list(self, flight_id: int):
         seats = await self.seat_repo.get_seat_list(flight_id)
         return seats
+        
+    async def get_seat_by_id(self, seat_id: int): 
+        seat = await self.seat_repo.get_seat_by_id(seat_id)
+        if not seat:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, detail='There is no such place')
         
     async def generate_seats_for_flight(self, flight_id: int, airplane: Airplane):
         seats_data_list = self._build_seat_dataframe(flight_id, airplane)
