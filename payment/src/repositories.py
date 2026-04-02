@@ -8,10 +8,10 @@ class PaymentRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
         
-    async def create_purchase_intent(self, payment_details:PaymentModel):
-        payment = PaymentModel(**payment_details.model_dump())
+    async def create_purchase_intent(self, payment: PaymentModel):
         self.session.add(payment)
         await self.session.commit()
+        return payment
         
     async def update_payment_status(self, status: str): 
         pass

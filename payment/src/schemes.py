@@ -6,6 +6,7 @@ from src.payment_enum import PaymentStatus
 class PaymentSchemes(BaseModel): 
     flight_id: int
     seat_id:int 
+    ticket_id: int
     
         
 class PaymentCreate(PaymentSchemes):

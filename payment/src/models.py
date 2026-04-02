@@ -9,6 +9,7 @@ class PaymentModel(Base):
     __tablename__ = 'payment'
     
     id: Mapped[int] = mapped_column(primary_key=True)
+    ticket_id: Mapped[int] = mapped_column(nullable= False)
     flight_id: Mapped[int] = mapped_column(nullable=False)
     seat_id: Mapped[int] = mapped_column(nullable=False)
     user_id: Mapped[int] = mapped_column(nullable=False) 
