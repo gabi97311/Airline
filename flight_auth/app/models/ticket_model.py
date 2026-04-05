@@ -25,6 +25,9 @@ class Ticket(Base):
 
     flight_id: Mapped[int] = mapped_column(ForeignKey("flights.flight_id"))
     flight: Mapped["Flight"] = relationship(back_populates="tickets")
+    
+    origin: Mapped[str]
+    dest: Mapped[str]
 
     passenger_name: Mapped[str]
 

@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  db:
+  flght_auth_db:
     image: postgres:15
     container_name: flight_auth_db
     restart: always
@@ -22,7 +22,7 @@ services:
     ports:
       - "8001:80"
     depends_on:
-      - db
+      - flght_auth_db
     env_file:
       - .env
     networks:

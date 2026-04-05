@@ -15,3 +15,10 @@ async def create_ticket(
     user: User = Depends(get_current_auth_user),
 ):
     return await ticket_service.create_ticket(ticket_details, user)
+
+@router.get('/{ticket_id}')
+async def get_ticket_by_id(
+    ticket_service: TicketServiceDep, 
+    ticket_id: int
+): 
+    return await ticket_service.get_ticket_by_id(ticket_id)

@@ -20,7 +20,6 @@ class TicketServices:
         self.seat_service = seat_service
 
     async def create_ticket(self, ticket_details: TicketCreate, user: UsersModel):
-        print(f"\n\n\n\n\n\n\nUser id: {user.id} \n\n\n\n\n\n\n")
 
         flight = await self.flight_service.get_flight_by_id(ticket_details.flight_id)
         seat = await self.seat_service.reserve_seat(ticket_details.seat_id)
@@ -28,7 +27,15 @@ class TicketServices:
         new_ticket = Ticket(
             **ticket_details.model_dump(),
             user_id = user.id,
-            flight_time = flight.flight_date
+            flight_time = flight.flight_date,
+            origin = flight.origin,
+            dest = flight.dest,
+            price = seat.price
             )
 
         return await self.ticket_repo.create_ticket(new_ticket)
+     
+    async def get_ticket_by_id(self, ticket_id: int) -> Ticket: 
+        if not (ticket := await self.ticket_repo.get_ticket_by_id(ticket_id)):
+            raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail='Ticket not found')
+        return ticket
