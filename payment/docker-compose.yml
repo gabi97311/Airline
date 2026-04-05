@@ -12,7 +12,7 @@ services:
     ports:
       - "5433:5432"
     networks:
-      - shared_flight_net # <--- ПРИВЯЗАЛИ К СЕТИ
+      - shared_flight_net
 
   payment-app:
     build: .
@@ -26,9 +26,21 @@ services:
     env_file:
       - .env
     networks:
-      - shared_flight_net # <--- ПРИВЯЗАЛИ К СЕТИ
+      - shared_flight_net
 
-# <--- ОПИСАЛИ СЕТЬ В КОНЦЕ ФАЙЛА --->
+  stripe-cli:
+    image: stripe/stripe-cli
+    container_name: stripe_cli_cont
+    command: >
+      listen --forward-to payment-app:80/payment/webhook
+      --api-key ${STRIPE_SECRET_KEY}
+    env_file:
+      - .env
+    depends_on:
+      - payment-app
+    networks:
+      - shared_flight_net
+
 networks:
   shared_flight_net:
     external: true

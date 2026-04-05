@@ -1,48 +1,131 @@
 from decimal import Decimal
 
-import httpx
-from fastapi import Depends, HTTPException, status
+from fastapi.responses import JSONResponse
+from fastapi import Depends, HTTPException, status, Request
 from typing import Optional, Any
-
+import stripe
 
 from src.models import PaymentModel
+from src.payment_enum import PaymentStatus
 from src.repositories import PaymentRepository
 from src.schemes import PaymentCreate
 from src.api_client import ApiClient
+from src.config import settings
+from src.exception import NotFoundException
 
 
 class PaymentService:
     def __init__(self, repo: PaymentRepository):
         self.repo = repo
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+    async def get_payment(self):
+        pass
 
-    async def create_purchase_intent(
-        self, payment_details: PaymentCreate, user_id: int, ticket_client: ApiClient
+    async def create_checkout_session(
+        self, ticket_details: PaymentCreate, ticket_client: ApiClient, user_id: int
     ):
+        payment = await self._verify_and_map_payment_data(
+            ticket_details, ticket_client, user_id
+        )
+        try:
+            session = stripe.checkout.Session.create(
+                line_items=[
+                    {
+                        "price_data": {
+                            "currency": "usd",
+                            "product_data": {"name": "Ticket"},
+                            "unit_amount": int(payment.amount * 100),
+                        },
+                        "quantity": 1,
+                    }
+                ],
+                metadata={"payment_id": str(payment.id)},
+                mode="payment",
+                success_url="http://localhost:8000/payment/success", 
+                cancel_url="http://localhost:8000/payment/cancel",
+            )
+            return session.url
+        except Exception as e:
+            print(f"Stripe Error: {e}")
+            raise HTTPException(status_code=500, detail="Ошибка при создании платежа")
 
-        ticket = await ticket_client.get_ticket(payment_details.ticket_id)
+    async def webhook(self, request: Request):
+        payload = await request.body()
+        sig_header = request.headers.get("stripe-signature")
+        webhook_secret = settings.STRIPE_WEBHOOK_SECRET
+
+        try:
+            event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
+        except stripe.error.SignatureVerificationError:
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"error": "Invalid signature"},
+            )
+        
+        session = event["data"]["object"]
+        
+        metadata = getattr(session, "metadata", None)
+        payment_id_str = getattr(metadata, "payment_id", None) if metadata else None
+
+        if not payment_id_str:
+            return {"status": "ignored"}
+
+        payment_id = int(payment_id_str)
+        event_type = event["type"]
+        
+        try:
+            if event_type == "checkout.session.completed":
+                await self.update_ticket_status(payment_id, PaymentStatus.succeeded)
+                
+            elif event_type in ["payment_intent.payment_failed", "checkout.session.expired"]:
+                await self.update_ticket_status(payment_id, PaymentStatus.failed)
+                
+            else:
+                return {"status": "ignored", "event": event_type}
+
+
+        except NotFoundException:
+            return JSONResponse(status_code=200, content={"message": "Not found"})
+        
+        except Exception:
+            return JSONResponse(status_code=500, content={"error": "Internal error"})
+
+        return {"status": "success"}
+
+    async def update_ticket_status(
+        self, payment_id: int, payment_status: PaymentStatus
+    ) -> PaymentModel:
+        if not (
+            update_payment := await self.repo.update_payment_status(
+                payment_id, payment_status
+            )
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Invalid payment data"
+            )
+        return update_payment
+
+    async def _verify_and_map_payment_data(
+        self,ticket_details: PaymentCreate, ticket_client: ApiClient, user_id: int 
+    ) -> PaymentModel:
+        ticket = await ticket_client.get_ticket(ticket_details.ticket_id)
         if not ticket:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, 
-                detail="Invalid payment data 1"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Invalid payment data"
             )
 
-        if payment_details.flight_id != ticket.get("flight_id") or \
-           payment_details.seat_id != ticket.get("seat_id"):
+        if user_id != ticket.get("user_id"):
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, 
-                detail="Invalid payment data 2"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid payment data"
             )
 
         payment = PaymentModel(
-            ticket_id = ticket.get('ticket_id'),
-            flight_id = ticket.get('flight_id'), 
-            seat_id = ticket.get('seat_id'),
-            user_id = user_id,
-            amount = Decimal(str(ticket.get('price'))),
-            payment_method = 'card'
+            ticket_id=ticket.get("ticket_id"),
+            flight_id=ticket.get("flight_id"),
+            seat_id=ticket.get("seat_id"),
+            user_id=ticket.get("user_id"),
+            amount=Decimal(str(ticket.get("price"))),
+            payment_method="card",
         )
         await self.repo.create_purchase_intent(payment)
-        return {'message' : "Good"}
-        
-    async def get_payment(self):
-        pass
+        return payment

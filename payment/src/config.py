@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     debug: bool = True 
     DATABASE_URL: str
     flight_auth_service: str
+    STRIPE_SECRET_KEY: str
+    STRIPE_WEBHOOK_SECRET: str
     
     cors_origins: list = [
         'http://localhost:3000',
