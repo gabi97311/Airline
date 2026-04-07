@@ -16,7 +16,7 @@ class PaymentRepository:
         await self.session.refresh(payment)
         return payment
 
-    async def update_payment_status(self, payment_id: int, payment_status: PaymentStatus):
+    async def update_payment_status(self, payment_id: int, payment_status: PaymentStatus) -> PaymentModel:
         stmt = (
             update(PaymentModel)
             .where(PaymentModel.id == payment_id)

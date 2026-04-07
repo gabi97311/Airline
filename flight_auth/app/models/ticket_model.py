@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import ForeignKey, func
+from sqlalchemy import ForeignKey, func, Enum
 from datetime import datetime
 from typing import TYPE_CHECKING
+import enum
 
 from app.database import Base
 
@@ -11,11 +12,23 @@ if TYPE_CHECKING:
     from app.models.seat_model import Seat
 
 
+class TicketStatus(str, enum.Enum):
+    paid = "paid"
+    pending = "pending"
+    failed = "failed"
+
+
 class Ticket(Base):
 
     __tablename__ = "tickets"
 
     ticket_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    
+    ticket_status: Mapped[TicketStatus] = mapped_column(
+        Enum(TicketStatus, name="ticket_status"),
+        default=TicketStatus.pending,
+        server_default=TicketStatus.paid.value,
+    )
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["UsersModel"] = relationship(back_populates="tickets")
@@ -25,7 +38,7 @@ class Ticket(Base):
 
     flight_id: Mapped[int] = mapped_column(ForeignKey("flights.flight_id"))
     flight: Mapped["Flight"] = relationship(back_populates="tickets")
-    
+
     origin: Mapped[str]
     dest: Mapped[str]
 

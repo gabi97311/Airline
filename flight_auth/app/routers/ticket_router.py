@@ -4,9 +4,9 @@ from app.models.users_model import UsersModel as User
 from app.schemes.ticket_schemes import TicketCreate
 from app.depends import TicketServiceDep
 from app.depends import get_current_auth_user
+from app.models.ticket_model import TicketStatus
 
 router = APIRouter(prefix="/ticket", tags=["Ticket"])
-
 
 @router.post("/create_ticket")
 async def create_ticket(
@@ -22,3 +22,17 @@ async def get_ticket_by_id(
     ticket_id: int
 ): 
     return await ticket_service.get_ticket_by_id(ticket_id)
+
+
+# for payment_micro service
+
+@router.post('/{ticket_id}/payment-details')
+async def payment_date(ticket_id:int, ticket_service: TicketServiceDep)
+
+@router.post('/{ticket_id}/confirm')
+async def confirm_ticket_payment(ticket_id:int, ticket_service: TicketServiceDep):
+    return await ticket_service.change_ticket_status(ticket_id, TicketStatus.paid)
+
+@router.post('/{ticket_id}/cancel')
+async def cancel_ticket_payment(ticket_id:int, ticket_service: TicketServiceDep): 
+    return await ticket_service.change_ticket_status(ticket_id, TicketStatus.failed)

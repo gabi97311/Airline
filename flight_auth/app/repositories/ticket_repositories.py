@@ -16,10 +16,4 @@ class TicketRepositories:
 
     async def get_ticket_by_id(self, ticket_id: int) -> tk | None:
         return await self.session.get(tk, ticket_id)
-
-    async def create_ticket(self, new_ticket: tk):
-        self.session.add(new_ticket)
-        await self.session.commit()
-        await self.session.refresh(new_ticket)
-        return new_ticket
     

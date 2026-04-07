@@ -49,7 +49,7 @@ class PaymentService:
             print(f"Stripe Error: {e}")
             raise HTTPException(status_code=500, detail="Ошибка при создании платежа")
 
-    async def webhook(self, request: Request):
+    async def webhook(self, request: Request, ticket_client: ApiClient):
         payload = await request.body()
         sig_header = request.headers.get("stripe-signature")
         webhook_secret = settings.STRIPE_WEBHOOK_SECRET
@@ -75,10 +75,10 @@ class PaymentService:
         
         try:
             if event_type == "checkout.session.completed":
-                await self.update_ticket_status(payment_id, PaymentStatus.succeeded)
+                await self.update_payment_status(payment_id, PaymentStatus.succeeded, ticket_client)
                 
             elif event_type in ["payment_intent.payment_failed", "checkout.session.expired"]:
-                await self.update_ticket_status(payment_id, PaymentStatus.failed)
+                await self.update_payment_status(payment_id, PaymentStatus.failed, ticket_client)
                 
             else:
                 return {"status": "ignored", "event": event_type}
@@ -87,13 +87,13 @@ class PaymentService:
         except NotFoundException:
             return JSONResponse(status_code=200, content={"message": "Not found"})
         
-        except Exception:
+        except Exception as e:
             return JSONResponse(status_code=500, content={"error": "Internal error"})
 
         return {"status": "success"}
 
-    async def update_ticket_status(
-        self, payment_id: int, payment_status: PaymentStatus
+    async def update_payment_status(
+        self, payment_id: int, payment_status: PaymentStatus, ticket_client: ApiClient
     ) -> PaymentModel:
         if not (
             update_payment := await self.repo.update_payment_status(
@@ -103,6 +103,14 @@ class PaymentService:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Invalid payment data"
             )
+        
+        ticket_id = update_payment.ticket_id
+        
+        if payment_status == PaymentStatus.succeeded:
+           await ticket_client.send_payment_success_event(ticket_id)
+        elif payment_status == PaymentStatus.failed:
+           await ticket_client.send_payment_failed_event(ticket_id)
+            
         return update_payment
 
     async def _verify_and_map_payment_data(

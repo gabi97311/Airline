@@ -15,8 +15,8 @@ async def create_checkout_session(
     return await payment_service.create_checkout_session(payment_details,ticket_client,user_id)
 
 @router.post("/webhook")
-async def stripe_webhook(request: Request, payment_service: PaymentServiceDep):
-    return await payment_service.webhook(request)
+async def stripe_webhook(request: Request, payment_service: PaymentServiceDep, ticket_client: TicketClientDep):
+    return await payment_service.webhook(request, ticket_client)
     
 @router.get("/success")
 async def payment_success():

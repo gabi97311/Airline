@@ -20,3 +20,7 @@ class ApiClient:
     
     async def get_ticket(self, ticket_id: int): 
         return await self._make_request('GET',f"/ticket/{ticket_id}")
+    async def send_payment_success_event(self, ticket_id: int):
+        return await self._make_request('POST',f'/ticket/{ticket_id}/confirm')
+    async def send_payment_failed_event(self, ticket_id: int): 
+        return await self._make_request('POST'f'/ticket/{ticket_id}/cancel')
