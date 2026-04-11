@@ -21,8 +21,8 @@ class SeatServices:
         seats = await self.seat_repo.get_seat_list(flight_id)
         return seats
 
-    async def get_seat_by_id(self, seat_id: int):
-        seat = await self.seat_repo.get_seat_by_id(seat_id)
+    async def get_seat_by_id(self, flight_id:int, seat_id: int) -> Seat:
+        seat = await self.seat_repo.get_seat_by_id(flight_id, seat_id)
         if not seat:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND, detail="There is no such place"

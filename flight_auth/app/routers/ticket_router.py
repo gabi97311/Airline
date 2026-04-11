@@ -24,10 +24,11 @@ async def get_ticket_by_id(
     return await ticket_service.get_ticket_by_id(ticket_id)
 
 
-# for payment_micro service
+# router for payment_micro service
 
 @router.post('/{ticket_id}/payment-details')
-async def payment_date(ticket_id:int, ticket_service: TicketServiceDep)
+async def payment_date(ticket_id:int, ticket_service: TicketServiceDep):
+    pass
 
 @router.post('/{ticket_id}/confirm')
 async def confirm_ticket_payment(ticket_id:int, ticket_service: TicketServiceDep):

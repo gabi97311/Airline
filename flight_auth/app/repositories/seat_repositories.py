@@ -10,8 +10,10 @@ class SeatRepositories:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_seat_by_id(self, seat_id: int):
-        return await self.session.get(Seat, seat_id)
+    async def get_seat_by_id(self, flight_id:int, seat_id: int):
+        stmt = select(Seat).where(Seat.flight_id == flight_id, Seat.seat_id == seat_id)
+        result = await self.session.execute(stmt)
+        return result.scalars().first()
 
     async def get_seat_list(self, flight_id: int) -> list[Seat] | None:
         stmt = select(Seat).where(Seat.flight_id == flight_id)

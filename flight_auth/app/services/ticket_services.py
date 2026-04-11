@@ -2,6 +2,7 @@ from fastapi import HTTPException, status
 
 from app.models import UsersModel, Ticket
 from app.models.seat_model import SeatStatus
+from app.models.ticket_model import TicketStatus
 from app.schemes.ticket_schemes import TicketCreate
 from app.repositories.ticket_repositories import TicketRepositories
 
@@ -46,5 +47,10 @@ class TicketServices:
         await self.ticket_repo.session.commit()
         await self.ticket_repo.session.refresh(ticket)
         return ticket 
+    
+    async def payment_date(self, ticket_id: int) -> Ticket:
+        ticket = await self.get_ticket_by_id(ticket_id)
+        if ticket.ticket_status == TicketStatus.paid:
+            return 
     
     

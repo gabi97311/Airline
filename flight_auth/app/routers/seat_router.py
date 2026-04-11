@@ -10,4 +10,6 @@ async def get_seat_list(flight_id:int,seat_service: SeatServiceDep):
 
 @router.get('/{seat_id}', response_model=SeatResponse)
 async def get_seat_by_id(flight_id: int, seat_id:int, seat_service: SeatServiceDep):
-    return await seat_service.get
+    return await seat_service.get_seat_by_id(flight_id, seat_id)
+
+
