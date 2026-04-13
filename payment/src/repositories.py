@@ -9,11 +9,13 @@ from .models import PaymentModel
 class PaymentRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
+        
+    async def get_payment_by_id(self, payment_id: int):
+        return await self.session.get(PaymentModel,payment_id)
 
     async def create_purchase_intent(self, payment: PaymentModel) -> PaymentModel:
         self.session.add(payment)
-        await self.session.commit()
-        await self.session.refresh(payment)
+        await self.session.flush()
         return payment
 
     async def update_payment_status(self, payment_id: int, payment_status: PaymentStatus) -> PaymentModel:
@@ -24,9 +26,10 @@ class PaymentRepository:
             .returning(PaymentModel)
         )
         result = await self.session.execute(stmt)
-        if result.scalar_one_or_none(): 
+        payment = result.scalar_one_or_none()
+        if payment: 
             await self.session.commit()
-        return result.scalar_one_or_none()
+        return payment
 
     async def get_payments(self):
         stmt = select(PaymentModel)

@@ -1,7 +1,9 @@
 import asyncio
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.database import create_table
+from app.config import settings
 from app.routers.auth_router import router as auth_router
 from app.routers.user_router import router as user_router
 from app.routers.ticket_router import router as ticket_router
@@ -10,7 +12,16 @@ from app.routers.flight_router import router as flight_router
 from app.routers.airplane_router import router as airplane_router
 
 
+
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_credentials=True,   # обязательно для cookie (JWT)
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(auth_router)
 app.include_router(user_router)

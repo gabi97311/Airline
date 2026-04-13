@@ -25,3 +25,8 @@ async def payment_success():
 @router.get("/cancel")
 async def payment_cancel():
     return {"message": "not Good"}
+
+@router.get('check_connection')
+async def check_connction(ticket_id: int, ticket_client: TicketClientDep):
+    ticket = await ticket_client.get_ticket(ticket_id, 1)
+    return ticket

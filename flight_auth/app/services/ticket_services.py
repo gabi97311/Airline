@@ -41,6 +41,7 @@ class TicketServices:
             raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail='Ticket not found')
         return ticket
     
+    
     async def change_ticket_status(self, ticket_id: int, seat_status: SeatStatus) -> Ticket:
         ticket = await self.get_ticket_by_id(ticket_id)
         ticket.ticket_status = seat_status
@@ -48,9 +49,13 @@ class TicketServices:
         await self.ticket_repo.session.refresh(ticket)
         return ticket 
     
-    async def payment_date(self, ticket_id: int) -> Ticket:
+    async def payment_date(self, ticket_id: int, user_id: int) -> Ticket:
         ticket = await self.get_ticket_by_id(ticket_id)
         if ticket.ticket_status == TicketStatus.paid:
-            return 
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='ticket was paid')
+        if ticket.user_id == user_id:
+            return ticket
+        else: 
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='ticket another user')
     
     
