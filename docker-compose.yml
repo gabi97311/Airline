@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  flight-auth-db:
+    image: postgres:15
+    container_name: flight_auth_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${AUTH_DB_USER}
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD}
+      POSTGRES_DB: ${AUTH_DB_NAME}
+    ports:
+      - "5434:5432"
+    networks:
+      - flight_net
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+
+  flight-auth-app:
+    build: ./flight_auth
+    container_name: flight_auth_service
+    ports:
+      - "8001:80"
+    depends_on:
+      - flight-auth-db
+    env_file:
+      - .env
+    networks:
+      - flight_net
+
+
+  payment-db:
+    image: postgres:15
+    container_name: payment_db_cont
+    restart: always
+    environment:
+      POSTGRES_USER: ${PAY_DB_USER}
+      POSTGRES_PASSWORD: ${PAY_DB_PASSWORD}
+      POSTGRES_DB: ${PAY_DB_NAME}
+    ports:
+      - "5433:5432"
+    networks:
+      - flight_net
+    volumes:
+      - payment_db_data:/var/lib/postgresql/data
+
+  payment-app:
+    build: ./payment
+    container_name: payment_service_cont
+    ports:
+      - "8000:80"
+    depends_on:
+      - payment-db
+      - rabbitmq
+    env_file:
+      - .env
+    networks:
+      - flight_net
+
+  stripe-cli:
+    image: stripe/stripe-cli
+    container_name: stripe_cli_cont
+    command: >
+      listen --forward-to payment-app:80/payment/webhook
+      --api-key ${STRIPE_SECRET_KEY}
+    env_file:
+      - .env
+    depends_on:
+      - payment-app
+    networks:
+      - flight_net
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: flight_rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBIT_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD:-guest}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - flight_net
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+networks:
+  flight_net:
+    driver: bridge
+
+volumes:
+  auth_db_data:
+  payment_db_data:
+  rabbitmq_data:

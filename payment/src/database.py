@@ -5,7 +5,7 @@ from fastapi import Depends
 
 from src.config import settings
 
-async_engine = create_async_engine(settings.DATABASE_URL)
+async_engine = create_async_engine(settings.PAY_DATABASE_URL)
 
 AsyncSessionLocal = async_sessionmaker(
     bind = async_engine,

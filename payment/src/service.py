@@ -134,6 +134,8 @@ class PaymentService:
 
         ticket_id = update_payment.ticket_id
 
+        print(f'\n\n\n\n\n\n\n\n\n{ticket_id}\n\n\n\n\n\n\n\n\n')
+        
         if payment_status == PaymentStatus.succeeded:
             await ticket_client.send_payment_success_event(ticket_id)
         elif payment_status == PaymentStatus.failed:

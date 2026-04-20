@@ -11,7 +11,7 @@ from app.routers.seat_router import router as seat_router
 from app.routers.flight_router import router as flight_router
 from app.routers.airplane_router import router as airplane_router
 
-
+from app.routers.analytics_router import router as analytics_router
 
 app = FastAPI()
 
@@ -29,5 +29,5 @@ app.include_router(ticket_router)
 app.include_router(seat_router)
 app.include_router(flight_router)
 app.include_router(airplane_router)
-
+app.include_router(analytics_router)
 # asyncio.run(create_table())

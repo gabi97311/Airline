@@ -3,6 +3,9 @@ from pydantic import BaseModel
 from pathlib import Path
 
 BASE_DIR = Path(__file__).parent.parent
+current_file_path = Path(__file__).resolve()
+root_path = current_file_path.parent.parent.parent.parent
+dotenv_path = root_path / ".env"
 
 class AuthJWT(BaseModel):
     public_key_file: Path = BASE_DIR / 'certs' / 'jwt-public.pem' 
@@ -11,7 +14,7 @@ class AuthJWT(BaseModel):
 class Settings(BaseSettings): 
     app_name: str = 'payment'
     debug: bool = True 
-    DATABASE_URL: str
+    PAY_DATABASE_URL: str
     flight_auth_service: str
     STRIPE_SECRET_KEY: str
     STRIPE_WEBHOOK_SECRET: str
@@ -26,7 +29,7 @@ class Settings(BaseSettings):
     auth_jwt: AuthJWT = AuthJWT()
     
     class Config:
-        env_file = '.env'
+        env_file = str(dotenv_path)
         extra = "ignore"
         
 settings = Settings()

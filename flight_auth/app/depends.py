@@ -11,6 +11,7 @@ from app.services.flight_services import FlightServices
 from app.services.seat_services import SeatServices
 from app.services.ticket_services import TicketServices
 from app.services.airplane_service import AirplaneServices
+from app.services.analytics_service import AnalyticsServices
 
 
 from app.repositories.users_repositories import UsersRepositories
@@ -18,6 +19,7 @@ from app.repositories.flight_repositories import FlightRepositories
 from app.repositories.seat_repositories import SeatRepositories
 from app.repositories.ticket_repositories import TicketRepositories
 from app.repositories.airplane_repositories import AirplaneRepositories
+from app.repositories.analytics_repositories import AnalyticsRepository
 
 http_bearer = HTTPBearer()
 
@@ -43,7 +45,7 @@ async def get_current_auth_user(
     user_services: UserServiceDep, payload: dict = Depends(get_current_token_payload)
 ):
     user_id: int = int(payload.get("sub"))
-    user =  await user_services.get_user_info(user_id)
+    user = await user_services.get_user_info(user_id)
     return user
 
 
@@ -94,9 +96,20 @@ def get_airplane_service(session: AsyncSessionDep) -> AirplaneServices:
     return AirplaneServices(session, AirplaneRepositories(session))
 
 
+# def get_analytics_service(
+#     flight_service: FlightServiceDep,
+#     seat_service: SeatServiceDep,
+#     ticket_service: TicketServiceDep,
+# ) -> AnalyticsServices:
+#     return AnalyticsServices(flight_service, seat_service, ticket_service)
+
+def get_analytics_service(session: AsyncSessionDep) -> AnalyticsServices:
+    return AnalyticsServices(AnalyticsRepository(session))
+
 AuthServiceDep = Annotated[AuthServices, Depends(get_auth_service)]
 UserServiceDep = Annotated[UserServices, Depends(get_user_service)]
 FlightServiceDep = Annotated[FlightServices, Depends(get_flight_service)]
 SeatServiceDep = Annotated[SeatServices, Depends(get_seat_service)]
 TicketServiceDep = Annotated[TicketServices, Depends(get_ticket_serivce)]
 AirplaneServiceDep = Annotated[AirplaneServices, Depends(get_airplane_service)]
+AnalyticsServiceDep = Annotated[AnalyticsServices,Depends(get_analytics_service)]
