@@ -13,21 +13,25 @@ class AuthJWT(BaseModel):
 
 class Settings(BaseSettings): 
     app_name: str = 'payment'
-    debug: bool = True 
     PAY_DATABASE_URL: str
     flight_auth_service: str
+    
     STRIPE_SECRET_KEY: str
     STRIPE_WEBHOOK_SECRET: str
+    
+    RMQ_URL: str
+    
+    Payment_Status_Queue: str
     
     cors_origins: list = [
         'http://localhost:3000',
         'http://127.0.0.1:3000'
     ]
     
-    static_dir: str = 'static'
-    
     auth_jwt: AuthJWT = AuthJWT()
     
+    static_dir: str = 'static'
+    debug: bool = True 
     class Config:
         env_file = str(dotenv_path)
         extra = "ignore"

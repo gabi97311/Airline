@@ -75,11 +75,11 @@ services:
     container_name: flight_rabbitmq
     restart: always
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBIT_USER:-guest}
-      RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD:-guest}
+      RABBITMQ_DEFAULT_USER: ${RMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RMQ_PASSWORD:-guest}
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "${RMQ_PORT:-5672}:5672"
+      - "${RMQ_MGMT_PORT:-15672}:15672"
     networks:
       - flight_net
     volumes:

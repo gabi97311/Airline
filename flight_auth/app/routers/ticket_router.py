@@ -23,7 +23,6 @@ async def get_ticket_by_id(
 ): 
     return await ticket_service.get_ticket_by_id(ticket_id)
 
-
 # router for payment_micro service
 
 @router.post('/{ticket_id}/payment-details')

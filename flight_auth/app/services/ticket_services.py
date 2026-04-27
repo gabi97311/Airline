@@ -40,8 +40,7 @@ class TicketServices:
         if not (ticket := await self.ticket_repo.get_ticket_by_id(ticket_id)):
             raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail='Ticket not found')
         return ticket
-    
-    
+        
     async def change_ticket_status(self, ticket_id: int, seat_status: SeatStatus) -> Ticket:
         ticket = await self.get_ticket_by_id(ticket_id)
         ticket.ticket_status = seat_status

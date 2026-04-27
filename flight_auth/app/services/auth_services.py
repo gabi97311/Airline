@@ -6,11 +6,7 @@ from app.hashing import getHash, get_hash_to_auth
 from app.repositories import UsersRepositories
 from app.jwt import encode_jwt
 
-
-
-
 class AuthServices: 
-    
     def __init__(self, user_repo: UsersRepositories):
         self.user_repo = user_repo
         

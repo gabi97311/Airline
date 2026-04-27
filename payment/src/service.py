@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from fastapi import Depends, HTTPException, status, Request
 from typing import Optional, Any
 import stripe
+from faststream.rabbit import RabbitBroker
 
 from src.models import PaymentModel
 from src.payment_enum import PaymentStatus
@@ -12,7 +13,7 @@ from src.schemes import PaymentCreate
 from src.api_client import ApiClient
 from src.config import settings
 from src.exception import NotFoundException
-
+from src.rabbit_mq.rabbitmq_client import AirlineMQClient
 
 class PaymentService:
     def __init__(self, repo: PaymentRepository):
@@ -133,8 +134,6 @@ class PaymentService:
             )
 
         ticket_id = update_payment.ticket_id
-
-        print(f'\n\n\n\n\n\n\n\n\n{ticket_id}\n\n\n\n\n\n\n\n\n')
         
         if payment_status == PaymentStatus.succeeded:
             await ticket_client.send_payment_success_event(ticket_id)
@@ -143,6 +142,13 @@ class PaymentService:
 
         return update_payment
 
+
+    async def send_payment_success_message(ticket_id: int):
+        await broker.publish(
+            {"ticket_id": ticket_id},
+            queue=settings.Payment_Status_Queue
+        )
+    
     async def _verify_and_map_payment_data(
         self, ticket_details: PaymentCreate, ticket_client: ApiClient, user_id: int
     ) -> PaymentModel:
