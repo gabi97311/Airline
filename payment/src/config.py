@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     
     RMQ_URL: str
     
-    Payment_Status_Queue: str
+    payment_queue: str
     
     cors_origins: list = [
         'http://localhost:3000',
@@ -31,7 +31,9 @@ class Settings(BaseSettings):
     auth_jwt: AuthJWT = AuthJWT()
     
     static_dir: str = 'static'
-    debug: bool = True 
+    debug: bool = True
+    
+     
     class Config:
         env_file = str(dotenv_path)
         extra = "ignore"

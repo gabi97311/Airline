@@ -1,23 +1,24 @@
 from decimal import Decimal
 
+from faststream.rabbit.fastapi import RabbitBroker
+from faststream.rabbit import RabbitExchange
 from fastapi.responses import JSONResponse
-from fastapi import Depends, HTTPException, status, Request
-from typing import Optional, Any
+from fastapi import HTTPException, status, Request
 import stripe
-from faststream.rabbit import RabbitBroker
 
+from src.schemes import PaymentStatusEvent
 from src.models import PaymentModel
 from src.payment_enum import PaymentStatus
 from src.repositories import PaymentRepository
 from src.schemes import PaymentCreate
 from src.api_client import ApiClient
 from src.config import settings
-from src.exception import NotFoundException
-from src.rabbit_mq.rabbitmq_client import AirlineMQClient
+
 
 class PaymentService:
-    def __init__(self, repo: PaymentRepository):
+    def __init__(self, repo: PaymentRepository, broker: RabbitBroker):
         self.repo = repo
+        self.broker = broker
         stripe.api_key = settings.STRIPE_SECRET_KEY
 
     async def get_payment_by_id(self, payment_id: int) -> PaymentModel:
@@ -67,7 +68,7 @@ class PaymentService:
             print(f"Stripe Error: {e}")
             raise HTTPException(status_code=500, detail="Ошибка при создании платежа")
 
-    async def webhook(self, request: Request, ticket_client: ApiClient):
+    async def webhook(self, request: Request):
         payload = await request.body()
         sig_header = request.headers.get("stripe-signature")
         webhook_secret = settings.STRIPE_WEBHOOK_SECRET
@@ -97,7 +98,7 @@ class PaymentService:
                 return
             if event_type == "checkout.session.completed":
                 await self.update_payment_status(
-                    payment_id, PaymentStatus.succeeded, ticket_client
+                    payment_id, PaymentStatus.succeeded
                 )
 
             elif event_type in [
@@ -105,7 +106,7 @@ class PaymentService:
                 "checkout.session.expired",
             ]:
                 await self.update_payment_status(
-                    payment_id, PaymentStatus.failed, ticket_client
+                    payment_id, PaymentStatus.failed
                 )
 
             else:
@@ -122,8 +123,8 @@ class PaymentService:
         return {"status": "success"}
 
     async def update_payment_status(
-        self, payment_id: int, payment_status: PaymentStatus, ticket_client: ApiClient
-    ) -> PaymentModel:
+        self, payment_id: int, payment_status: PaymentStatus
+    ):
         if not (
             update_payment := await self.repo.update_payment_status(
                 payment_id, payment_status
@@ -132,23 +133,30 @@ class PaymentService:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Invalid payment data"
             )
-
-        ticket_id = update_payment.ticket_id
+        print('\n\n\n Hello world \n\n\n')
         
-        if payment_status == PaymentStatus.succeeded:
-            await ticket_client.send_payment_success_event(ticket_id)
-        elif payment_status == PaymentStatus.failed:
-            await ticket_client.send_payment_failed_event(ticket_id)
+        ticket = PaymentStatusEvent.model_validate(update_payment)
+        
+        print(f'\n\n\n {ticket}\n\n\n')
 
-        return update_payment
+        await self.send_payment_event(ticket)
+        
+    async def send_payment_event(self, ticket: PaymentStatusEvent):
+        payment_exchange = RabbitExchange('payment')
+        if ticket.status == PaymentStatus.failed:
+            await self.broker.publish(
+                ticket,
+                queue=settings.payment_queue,
+                routing_key=PaymentStatus.failed.value,
+            )
+        else:
+            await self.broker.publish(
+                ticket,
+                queue=settings.payment_queue,
+                routing_key='succeeded',
+                exchange=payment_exchange
+            )
 
-
-    async def send_payment_success_message(ticket_id: int):
-        await broker.publish(
-            {"ticket_id": ticket_id},
-            queue=settings.Payment_Status_Queue
-        )
-    
     async def _verify_and_map_payment_data(
         self, ticket_details: PaymentCreate, ticket_client: ApiClient, user_id: int
     ) -> PaymentModel:

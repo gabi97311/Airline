@@ -1,10 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
-from faststream.rabbit import RabbitBroker
-from src.depends import PaymentServiceDep, TicketClientDep, get_broker
+from fastapi import APIRouter, Depends, Request
+from src.depends import PaymentServiceDep, TicketClientDep
 from src.schemes import PaymentCreate
 from src.jwt import get_current_user_id
-
-router = APIRouter(prefix="/payment", tags=["Payment"])
+from src.broker import router
 
 
 @router.post("/create_checkout_session")
@@ -18,16 +16,12 @@ async def create_checkout_session(
         payment_details, ticket_client, user_id
     )
 
-
 @router.post("/webhook")
 async def stripe_webhook(
     request: Request,
     payment_service: PaymentServiceDep,
-    ticket_client: TicketClientDep,
-    broker: RabbitBroker = Depends(get_broker),
 ):
-    return await payment_service.webhook(request, ticket_client)
-
+    return await payment_service.webhook(request)
 
 @router.get("/check_connection")
 async def check_connction(ticket_id: int, ticket_client: TicketClientDep):

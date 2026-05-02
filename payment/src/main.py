@@ -1,20 +1,20 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.config import settings
-from contextlib import asynccontextmanager
 from src.router import router as payment_router
-from faststream.rabbit import RabbitBroker
-
-broker = RabbitBroker(host=settings.RMQ_URL)
+from src.test_router import test_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await broker.start()
+    # Код здесь выполняется ПРИ СТАРТЕ приложения
+    await payment_router.connect() 
     yield
-    await broker.close(
-    )
+    # Код здесь выполняется ПРИ ОСТАНОВКЕ приложения
+    await payment_router.close()
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,5 +24,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 app.include_router(payment_router)
+app.include_router(test_router)

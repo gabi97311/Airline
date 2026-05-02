@@ -29,6 +29,7 @@ class PaymentRepository:
         payment = result.scalar_one_or_none()
         if payment: 
             await self.session.commit()
+            await self.session.refresh(payment)
         return payment
 
     async def get_payments(self):

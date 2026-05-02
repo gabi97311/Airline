@@ -17,3 +17,5 @@ class Airplane(Base):
     seats_config: Mapped[str] = mapped_column(String(10), default="ABCDEF")
     
     flights: Mapped[list["Flight"]] = relationship(back_populates="airplane")
+    
+    

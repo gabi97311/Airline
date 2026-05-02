@@ -18,3 +18,8 @@ class PaymentCreate(BaseModel):
 class PaymentResponse(PaymentSchemes): 
     id: int 
     
+class PaymentStatusEvent(BaseModel): 
+    ticket_id: int 
+    status: PaymentStatus
+    
+    model_config = ConfigDict(from_attributes=True)
