@@ -8,10 +8,8 @@ from src.test_router import test_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Код здесь выполняется ПРИ СТАРТЕ приложения
     await payment_router.connect() 
     yield
-    # Код здесь выполняется ПРИ ОСТАНОВКЕ приложения
     await payment_router.close()
 
 app = FastAPI()

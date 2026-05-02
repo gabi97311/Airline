@@ -15,17 +15,21 @@ class AuthJWT(BaseModel):
     algorithm: str = 'RS256'
     access_token_expire_mins: int = 15
 
+
 class Settings(BaseSettings):
     app_name: str = 'registration and authentication'
     debug: bool = True
+    static_dir: str = 'static'
     AUTH_DATABASE_URL: str 
+    auth_jwt: AuthJWT = AuthJWT()
     cors_origins: list = [
         'http://localhost:3000',
         'http://127.0.0.1:3000'
     ]
-    static_dir: str = 'static'
     
-    auth_jwt: AuthJWT = AuthJWT()
+    #RabbitMQ
+    RMQ_URL: str
+    payment_queue: str
     
     class Config:
         env_file = str(dotenv_path)

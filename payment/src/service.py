@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from faststream.rabbit.fastapi import RabbitBroker
-from faststream.rabbit import RabbitExchange
+from faststream.rabbit import RabbitExchange, RabbitQueue
 from fastapi.responses import JSONResponse
 from fastapi import HTTPException, status, Request
 import stripe
@@ -133,27 +133,24 @@ class PaymentService:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Invalid payment data"
             )
-        print('\n\n\n Hello world \n\n\n')
         
         ticket = PaymentStatusEvent.model_validate(update_payment)
-        
-        print(f'\n\n\n {ticket}\n\n\n')
 
         await self.send_payment_event(ticket)
         
     async def send_payment_event(self, ticket: PaymentStatusEvent):
-        payment_exchange = RabbitExchange('payment')
-        if ticket.status == PaymentStatus.failed:
+        payment_exchange = RabbitExchange('payment', durable=True)
+        
+        if ticket.status == PaymentStatus.succeeded:
             await self.broker.publish(
-                ticket,
-                queue=settings.payment_queue,
-                routing_key=PaymentStatus.failed.value,
+                ticket.ticket_id,
+                routing_key='succeeded',
+                exchange=payment_exchange
             )
         else:
             await self.broker.publish(
-                ticket,
-                queue=settings.payment_queue,
-                routing_key='succeeded',
+                ticket.ticket_id,
+                routing_key='failed',
                 exchange=payment_exchange
             )
 
