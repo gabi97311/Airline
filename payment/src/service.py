@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from faststream.rabbit.fastapi import RabbitBroker
-from faststream.rabbit import RabbitExchange, RabbitQueue
+from faststream.rabbit import RabbitExchange
 from fastapi.responses import JSONResponse
 from fastapi import HTTPException, status, Request
 import stripe

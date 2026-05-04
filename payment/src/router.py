@@ -27,8 +27,6 @@ async def stripe_webhook(
 async def check_connction(ticket_id: int, ticket_client: TicketClientDep):
     ticket = await ticket_client.get_ticket(ticket_id, 1)
     return ticket
-
-
 @router.get("/check_func")
 async def check_func(ticket_id: int, ticket_client: TicketClientDep):
     return await ticket_client.send_payment_success_event(ticket_id)

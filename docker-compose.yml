@@ -75,7 +75,11 @@ services:
       - flight_net
   
   skybook-app:
-    build: ./skybook
+    build: 
+      context: ./skybook
+      args:
+        - NEXT_PUBLIC_AUTH_URL=/api/auth
+        - NEXT_PUBLIC_PAYMENT_URL=/api/payment
     container_name: skybook_frontend
     restart: always
     ports:

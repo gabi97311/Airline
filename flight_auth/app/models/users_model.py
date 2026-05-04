@@ -14,7 +14,6 @@ class UserRole(enum.Enum):
     user = 'user'
     admin = "admin"
 
-
 class UsersModel(Base):
     __tablename__ = 'users'
     

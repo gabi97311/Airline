@@ -60,9 +60,3 @@ class FlightRepositories:
        await self.session.flush()
        return flight 
         
-        
-        
-        
-
-
-        
