@@ -50,6 +50,12 @@ JWT token carries the user role in its payload — downstream services authorize
 
 ---
 
+
+## ER Diagram
+
+<img width="1511" height="990" alt="{5154765A-1384-4690-89D3-DD44E816010E}" src="https://github.com/user-attachments/assets/e73980a7-66f8-44bf-bb5b-b5d8390819a5" />
+
+
 ## API
 
 ### flight_auth `localhost:8001`
