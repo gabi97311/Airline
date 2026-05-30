@@ -2,8 +2,6 @@ from pydantic_settings import BaseSettings
 from pydantic import BaseModel
 from pathlib import Path
 
-
-
 BASE_DIR = Path(__file__).parent.parent
 current_file_path = Path(__file__).resolve()
 root_path = current_file_path.parent.parent.parent.parent.parent
@@ -20,6 +18,8 @@ class Settings(BaseSettings):
     AUTH_DATABASE_URL: str
     PAY_DATABASE_URL: str
     static_dir: str = str(dotenv_path)
+    
+    RMQ_URL: str
     
     auth_jwt: AuthJWT = AuthJWT()
     
