@@ -28,6 +28,6 @@ class SeatRepositories:
         seat = await self.session.execute(stmt)
         return seat.scalars().first()
 
-    async def update_seat_status(self, seat_id: int, status: SeatStatus):
-        seat = update(Seat).where(Seat.seat_id == seat_id).values(seat_status=status)
+    async def update_seat_status(self, flight_id: int, seat_id: int, status: SeatStatus):
+        seat = update(Seat).where(Seat.seat_id == seat_id and Seat.flight_id == flight_id).values(seat_status=status)
         await self.session.execute(seat)

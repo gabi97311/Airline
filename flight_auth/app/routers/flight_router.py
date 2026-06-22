@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from app.depends import FlightServiceDep, check_admin_privileges
-from app.schemes.flight_schemes import FlightCreate, FlightQuery
+from app.schemes.flight_schemes import FlightCreate, FlightQuery, FlightUpdate
 
 router = APIRouter(prefix='/flight', tags=['flight'])
 
@@ -20,8 +20,8 @@ async def get_flight_by_id(flight_id:int, flight_service: FlightServiceDep):
     return await flight_service.get_flight_by_id(flight_id)
 
 @router.put('/{flight_id}')
-async def update_flight_by_id(flight_id: int, flight_service: FlightServiceDep):
-    pass
+async def update_flight_by_id(flight_service: FlightServiceDep, flight: FlightUpdate = Depends()):
+    return await flight_service
 
 @router.delete('/{flight_id}')
 async def delete_flight_by_id(flight_id:int, flight_service: FlightServiceDep):

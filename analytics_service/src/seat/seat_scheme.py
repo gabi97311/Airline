@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict
-from src.analtics_enum import SeatClass, SeatStatus
+from analytics_service.src.enums.analtics_enum import SeatClass, SeatStatus
 
 class SeatScheme(BaseModel):
     id: int

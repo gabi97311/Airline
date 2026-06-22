@@ -8,7 +8,7 @@ from app.models.ticket_model import TicketStatus
 from app.routers.broker import router as broker_router, ticket_exchange, ticket_queue_succeeded, ticket_queue_failed
 router = APIRouter(prefix="/ticket", tags=["Ticket"])
 
-@router.post("/create_ticket")
+@router.post("/purchase_ticket")
 async def create_ticket(
     ticket_service: TicketServiceDep,
     ticket_details: TicketCreate = Depends(),

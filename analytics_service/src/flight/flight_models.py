@@ -2,7 +2,7 @@ from src.config_database.database import Base
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import date 
 
-class AnalyticsFlight(Base):
+class FlightModel(Base):
     __tablename__ = 'analytics_flights'
 
     flight_id: Mapped[int] = mapped_column(primary_key=True)
@@ -13,7 +13,7 @@ class AnalyticsFlight(Base):
     is_delay: Mapped[bool]
 
 
-class AnalyticsFlightDetails(Base):
+class FlightDetailsModel(Base):
     __tablename__ = 'analytics_flight_details'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)

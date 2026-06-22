@@ -3,7 +3,7 @@ from sqlalchemy import Numeric, Enum
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.config_database.database import Base
-from src.analtics_enum import PaymentStatus
+from analytics_service.src.enums.analtics_enum import PaymentStatus
 
 class AnalyticsPayment(Base):
     __tablename__ = 'analytics_payments'

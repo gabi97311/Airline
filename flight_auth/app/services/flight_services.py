@@ -1,7 +1,7 @@
 from fastapi import HTTPException,status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.schemes.flight_schemes import FlightQuery, FlightCreate
+from app.schemes.flight_schemes import FlightQuery, FlightCreate, FlightUpdate
 from app.services.seat_services import SeatServices 
 from app.services.airplane_service import AirplaneServices
 
@@ -55,7 +55,6 @@ class FlightServices:
         except Exception as e: 
             await self.session.rollback()
             raise e 
-        
     
-
-        
+    async def update_flight_by_id(self, flight: FlightUpdate):
+        flight

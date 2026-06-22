@@ -27,6 +27,8 @@ class SeatServices:
             raise HTTPException(
                 status.HTTP_404_NOT_FOUND, detail="There is no such place"
             )
+        return seat
+    
 
     async def get_seat_by_id_with_for_update(self, seat_id: int) -> Seat:
         seat = await self.seat_repo.get_seat_for_update(seat_id)
@@ -53,6 +55,11 @@ class SeatServices:
             await self.session.rollback()
             raise e
 
+    async def update_seat_status(self, flight_id: int, seat_id: int, seat_status: SeatStatus):
+        seat = await self.get_seat_by_id(flight_id, seat_id)
+        seat.seat_status = seat_status
+        
+    
     # func to genarate seat for flight
     def _build_seat_dataframe(self, flight_id: int, airplane: Airplane):
         max_seat = airplane.max_seats

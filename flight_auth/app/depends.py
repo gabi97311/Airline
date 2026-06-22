@@ -79,13 +79,12 @@ def get_flight_service(
         airplane_service,
     )
 
-
 def get_ticket_serivce(
     session: AsyncSessionDep,
     flight_service: FlightServiceDep,
     seat_service: SeatServiceDep,
 ) -> TicketServices:
-    return TicketServices(TicketRepositories(session), flight_service, seat_service)
+    return TicketServices(session, TicketRepositories(session), flight_service, seat_service)
 
 
 def get_seat_service(session: AsyncSessionDep) -> SeatServices:

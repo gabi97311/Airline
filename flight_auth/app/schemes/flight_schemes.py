@@ -37,3 +37,11 @@ class FlightQuery(BaseModel):
     sort_order: Optional[Literal['asc', 'desc']] = 'asc'
     page: int = Field(default=1, ge=1)
     size: int = Field(default=20, ge=1, le=100)
+    
+class FlightUpdate(BaseModel):
+    flight_id: int
+    reporting_airline: Optional[str] = None
+    origin: Optional[str] = None
+    dest: Optional[str] = None
+    airplane_id: Optional[str] = None
+    is_delay: Optional[bool] = None
