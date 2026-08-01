@@ -1,2 +1,5 @@
 .env
-certs/
+**/certs/
+__pycache__/
+*.pyc
+venv/
