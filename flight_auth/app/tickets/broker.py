@@ -6,7 +6,7 @@ from app.tickets.ticket_model import TicketStatus
 
 from app.core import settings
 
-router = RabbitRouter(url=settings.RMQ_URL)
+router = RabbitRouter()
 
 ticket_exchange = RabbitExchange('payment', durable=True)
 ticket_queue_succeeded = RabbitQueue('payment_queue_succeeded', routing_key='succeeded')
