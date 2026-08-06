@@ -2,9 +2,9 @@ import asyncio
 
 import typer
 from app.database import AsyncSessionLocal
-from app.models.users_model import UsersModel
-from app.schemes.user_schemes import UserRole
-from app.hashing import getHash
+from Airline.auth.src.users_model import UsersModel
+from Airline.flight_auth.app.users.user_schemes import UserRole
+from Airline.auth.src.hashing import getHash
 from sqlalchemy import select
 
 app = typer.Typer()

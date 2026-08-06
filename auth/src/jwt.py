@@ -1,4 +1,4 @@
-import Airline.auth.src.jwt as jwt
+import jwt
 from fastapi import HTTPException
 from datetime import datetime, timedelta
 from Airline.auth.src.jwt import ExpiredSignatureError, InvalidTokenError
