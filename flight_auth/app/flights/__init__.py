@@ -8,5 +8,6 @@ from .flight_schemes import (
     FlightRevalidate,
     FlightQuery,
     FlightUpdate,
+    FlightEvent
     )
 from .flight_services import FlightServices

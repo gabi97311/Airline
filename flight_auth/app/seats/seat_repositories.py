@@ -2,7 +2,8 @@ from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # import model
-from app.seats.seat_model import Seat, SeatStatus
+from app.seats.seat_model import Seat
+from app.utils.enums import SeatStatus
 
 
 class SeatRepositories:

@@ -1,8 +1,5 @@
-from faststream.rabbit.fastapi import RabbitRouter
 from enum import Enum
+from faststream.rabbit.fastapi import RabbitRouter
 
-router = RabbitRouter()
-
-class RabbitExchange(str, Enum):
-    FLIGHT_EVENTS = "flight_events"
-    PAYMENT_EVENTS = "payment_events"
+from app.utils import Services
+from app.flights import FlightEvent

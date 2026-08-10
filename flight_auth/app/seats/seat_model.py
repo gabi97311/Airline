@@ -4,24 +4,11 @@ import enum
 from typing import TYPE_CHECKING
 
 from app.core import Base
-
+from app.utils.enums import SeatStatus, SeatClass
 
 if TYPE_CHECKING: 
     from app.flights import Flight
     from app.tickets import Ticket
-    
-class SeatClass(str, enum.Enum):
-    economy = 'Economy'
-    business = 'Business'
-    comfort = 'Comfort'
-    first = 'First'
-    
-class SeatStatus(str, enum.Enum):
-    free = 'Free'
-    pending = 'Pending'
-    occupied = 'Occupied'
-    blocked = 'Blocked'
-    
     
 class Seat(Base): 
     

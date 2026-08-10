@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
-from Airline.flight_auth.app.utils.depends import Services, check_admin_privileges
-from Airline.flight_auth.app.flights.flight_schemes import FlightCreate, FlightQuery, FlightUpdate
+from app.utils import Services, Jwt
 from app.utils import Services
+from app.flights.flight_schemes import FlightCreate, FlightQuery, FlightUpdate 
 
 router = APIRouter(prefix='/flight', tags=['flight'])
 
@@ -9,7 +9,7 @@ router = APIRouter(prefix='/flight', tags=['flight'])
 async def create_flight(
     services: Services,
     flight_details: FlightCreate = Depends(),
-    admin: dict = Depends(check_admin_privileges)):
+    admin: dict = Depends(Jwt.check_admin_privileges)):
     return await services.flight.create_flight(flight_details)
 
 @router.get('/')

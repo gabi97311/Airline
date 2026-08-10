@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Response, Form, HTTPException, status
 from app.schemes import RegisterSchemes
 from app.depends import AuthServiceDep
-
+from src.auth_schemes import RegisterSchemes
 router = APIRouter(prefix='/auth', tags=['Auth'])
 
 

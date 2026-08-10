@@ -1,10 +1,11 @@
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import RowMapping, Sequence, func, select, asc, desc, update, insert
+
 from app.seats import Seat as fs
 from app.flights.flight_schemes import FlightQuery
 from app.flights.flight_models import Flight as fl
 from app.seats import SeatStatus
-
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import RowMapping, Sequence, func, select, asc, desc, update, insert
+from app.flights.flight_schemes import FlightCreate
 
 
 
@@ -59,8 +60,9 @@ class FlightRepositories:
     
         return result.mappings().all()
         
-    async def create_flight(self, flight:fl ) -> fl:
-       self.session.add(flight)
-       await self.session.flush()
-       return flight 
+    async def create_flight(self, flight_scheme: FlightCreate ) -> fl:
+        flight = fl(**flight_scheme.model_dump())
+        self.session.add(flight)
+        await self.session.flush()
+        return flight 
         

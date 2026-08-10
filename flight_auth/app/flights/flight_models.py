@@ -22,6 +22,7 @@ class Flight(Base):
     dest: Mapped[str]
     airplane_id: Mapped[int] = mapped_column(ForeignKey('airplanes.airplane_id'))
     is_delay: Mapped[bool] = mapped_column(default=False, server_default="False")
+    status: Mapped[bool] = mapped_column(default=False, server_default="False")
     
     airplane: Mapped["Airplane"] = relationship(back_populates="flights")
     seats: Mapped[List["Seat"]] = relationship(back_populates="flight", lazy="select")

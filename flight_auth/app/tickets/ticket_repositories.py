@@ -1,5 +1,4 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 
 from app.tickets.ticket_model import Ticket as tk
 

@@ -5,14 +5,14 @@ import numpy as np
 from app.airplanes import Airplane
 
 from app.seats.seat_model import Seat
-from app.seats.seat_schemes import SeatClass, SeatStatus
+from app.utils.enums import SeatStatus, SeatClass 
 
 from app.seats.seat_repositories import SeatRepositories
 
 
 class SeatServices:
 
-    def __init__(self, seat_repo: SeatRepositories):
+    def __init__(self,seat_repo: SeatRepositories):
         self.seat_repo = seat_repo
 
     async def get_seat_list(self, flight_id: int):
@@ -48,9 +48,9 @@ class SeatServices:
         seats_data_list = self._build_seat_dataframe(flight_id, airplane)
         try:
             seat = [Seat(**seat_dict) for seat_dict in seats_data_list]
-            self.session.add_all(seat)
+            self.seat_repo.session.add(seat)
         except Exception as e:
-            await self.session.rollback()
+            await self.seat_repo.session.rollback()
             raise e
 
     async def update_seat_status(self, flight_id: int, seat_id: int, seat_status: SeatStatus):

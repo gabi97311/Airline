@@ -1,21 +1,15 @@
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import ForeignKey, func, Enum
+import enum
 from datetime import datetime
 from typing import TYPE_CHECKING
-import enum
+from sqlalchemy import ForeignKey, func, Enum
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core import Base
+from app.utils.enums import TicketStatus
 
 if TYPE_CHECKING:
     from app.flights import Flight
     from app.seats import Seat
-
-
-class TicketStatus(str, enum.Enum):
-    paid = "paid"
-    pending = "pending"
-    failed = "failed"
-
 
 class Ticket(Base):
 

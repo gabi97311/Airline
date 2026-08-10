@@ -1,13 +1,13 @@
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import UsersModel, Ticket
-from Airline.flight_auth.app.seats.seat_model import SeatStatus
-from Airline.flight_auth.app.tickets.ticket_model import TicketStatus
-from Airline.flight_auth.app.tickets.ticket_schemes import TicketCreate
-from Airline.flight_auth.app.tickets.ticket_repositories import TicketRepositories
+from app.flights import FlightServices
+from app.seats import SeatServices
+from app.tickets.ticket_model import Ticket
+from app.tickets.ticket_repositories import TicketRepositories 
+from app.utils.enums import SeatStatus, TicketStatus
+from app.tickets.ticket_schemes import TicketCreate 
 
-from app.services import FlightServices, SeatServices
 
 
 class TicketServices:
@@ -23,14 +23,14 @@ class TicketServices:
         self.flight_service = flight_service
         self.seat_service = seat_service
 
-    async def create_ticket(self, ticket_details: TicketCreate, user: UsersModel):
+    async def create_ticket(self, ticket_details: TicketCreate, user_id: int):
 
         flight = await self.flight_service.get_flight_by_id(ticket_details.flight_id)
         seat = await self.seat_service.reserve_seat(ticket_details.seat_id)
 
         new_ticket = Ticket(
             **ticket_details.model_dump(),
-            user_id=user.id,
+            user_id=user_id,
             flight_time=flight.flight_date,
             origin=flight.origin,
             dest=flight.dest,

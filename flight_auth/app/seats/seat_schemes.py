@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 
-from app.seats.seat_schemes import SeatClass, SeatStatus
+from app.utils.enums import SeatClass, SeatStatus
 
 class SeatShemes(BaseModel):
     seat_code: str 

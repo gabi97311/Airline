@@ -3,8 +3,8 @@ from fastapi import APIRouter, Depends
 from Airline.auth.src.users_model import UsersModel as User
 from app.tickets.ticket_schemes import TicketCreate
 from app.utils import Services, Jwt
-from Airline.flight_auth.app.utils.depends import get_current_auth_user
-from app.tickets.ticket_model import TicketStatus
+from app.utils import Jwt
+from app.utils.enums import TicketStatus
 from app.tickets.broker import router as broker_router, ticket_exchange, ticket_queue_succeeded, ticket_queue_failed
 router = APIRouter(prefix="/ticket", tags=["Ticket"])
 
@@ -12,9 +12,9 @@ router = APIRouter(prefix="/ticket", tags=["Ticket"])
 async def create_ticket(
     service: Services,
     ticket_details: TicketCreate = Depends(),
-    user: User = Depends(jwtget_current_auth_user),
+    user_id: User = Depends(Jwt.get_current_auth_user),
 ):
-    return await service.ticket.create_ticket(ticket_details, user)
+    return await service.ticket.create_ticket(ticket_details, user_id)
 
 @router.get('/{ticket_id}')
 async def get_ticket_by_id(

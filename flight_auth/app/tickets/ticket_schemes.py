@@ -25,3 +25,21 @@ class TicketResponse(TicketBase):
 
 class TicketDetailResponse(TicketResponse):
     pass
+
+
+class TicketAnalyticsMessage(BaseModel):
+    event_id: str
+    event_type: TicketEventType
+    event_time: datetime
+    version: int
+
+    ticket_id: int
+    flight_id: int
+    status: str
+    price: float
+    origin: str
+    dest: str
+    seat_class: str
+
+    purchase_time: datetime
+    flight_time: datetime

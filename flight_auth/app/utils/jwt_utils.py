@@ -36,13 +36,11 @@ class Jwt:
             )
         return payload
 
-    # @staticmethod
-    # async def get_current_auth_user(
-    #     user_services: UserServiceDep, payload: dict = Depends(get_current_token_payload)
-    # ):
-    #     user_id: int = int(payload.get("sub"))
-    #     user = await user_services.get_user_info(user_id)
-    #     return user
+    @staticmethod
+    async def get_current_auth_user(payload: dict = Depends(get_current_token_payload)
+    ):
+        user_id: int = int(payload.get("sub"))
+        return user_id
 
     @staticmethod
     def check_admin_privileges(payload: dict = Depends(get_current_token_payload)):
